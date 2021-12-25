@@ -5,6 +5,7 @@ buildscript {
         google()
 //        maven { url 'https://developer.huawei.com/repo/' }
         mavenCentral()
+        maven { url "https://jitpack.io" }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:4.2.2"
@@ -18,6 +19,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven { url "https://jitpack.io" }
         jcenter() // Warning: this repository is going to shut down soon
 //        maven { url 'https://developer.huawei.com/repo/' }
     }

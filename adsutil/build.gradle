@@ -1,6 +1,7 @@
 plugins {
     id "com.android.library"
     id 'kotlin-android'
+    id 'maven-publish'
 }
 
 android {
@@ -52,4 +53,19 @@ dependencies {
     // Admob
     implementation 'com.google.android.gms:play-services-ads:20.1.0'
     implementation 'com.facebook.shimmer:shimmer:0.5.0@aar'
+}
+task androidSourcesJar(type: Jar) {
+    classifier 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                artifact androidSourcesJar // optional sources
+            }
+        }
+    }
 }

@@ -4,14 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FAFAFA"
     tools:context=".MainActivity">
 
     <Button
         android:id="@+id/btn_banner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:onClick="loadNativeBanner"
         android:text="Banner"
-        android:onClick="openBanner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -20,8 +21,8 @@
         android:id="@+id/btn_native"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Native"
         android:onClick="openNative"
+        android:text="Native"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_banner" />
@@ -30,19 +31,43 @@
         android:id="@+id/btn_inter"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Interstitial"
         android:onClick="interstitial"
+        android:text="Interstitial"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_native" />
 
-    <FrameLayout
-        android:id="@+id/ads_container"
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_inter"
+        app:layout_constraintVertical_bias="1">
 
-    </FrameLayout>
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_banner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="10dp">
+
+            <include layout="@layout/ads_native_small_layout" />
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_native"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="10dp">
+
+            <include layout="@layout/ads_native_layout" />
+
+        </androidx.cardview.widget.CardView>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.constraintlayout.widget.ConstraintLayout>

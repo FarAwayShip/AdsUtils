@@ -11,7 +11,7 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 1
+        versionCode getDate()
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -37,6 +37,11 @@ android {
     }
 }
 
+def static getDate() {
+    return new Date().format('yyyyMMddHH').toInteger()
+}
+
+
 dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -48,10 +53,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
-
-
     // Admob
-    implementation 'com.google.android.gms:play-services-ads:20.1.0'
+    implementation 'com.google.android.gms:play-services-ads:20.5.0'
     implementation 'com.facebook.shimmer:shimmer:0.5.0@aar'
 }
 task androidSourcesJar(type: Jar) {

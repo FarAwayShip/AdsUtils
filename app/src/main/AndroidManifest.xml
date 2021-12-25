@@ -7,12 +7,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <meta-data android:name="com.huawei.hms.client.channel.androidMarket" android:value="false" />
+<!--        <meta-data android:name="com.huawei.hms.client.channel.androidMarket" android:value="false" />-->
+        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="@string/ads_test_app_id" />
     </application>
-    <queries>
-        <intent>
-            <action android:name="com.huawei.hms.core.aidlservice" />
-        </intent>
-    </queries>
+<!--    <queries>-->
+<!--        <intent>-->
+<!--            <action android:name="com.huawei.hms.core.aidlservice" />-->
+<!--        </intent>-->
+<!--    </queries>-->
 </manifest>
 

@@ -37,37 +37,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_native" />
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_inter"
         app:layout_constraintVertical_bias="1">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card_banner"
+        <pl.itto.adsutil.NativeAdsLayout
+            android:id="@+id/native_ads"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="10dp">
+            app:ads_id="@string/ads_test_native_id" />
 
-            <include layout="@layout/ads_native_small_layout" />
-
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card_native"
+        <pl.itto.adsutil.NativeAdsLayout
+            android:id="@+id/banner_ads"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="10dp">
-
-            <include layout="@layout/ads_native_layout" />
-
-        </androidx.cardview.widget.CardView>
-    </androidx.appcompat.widget.LinearLayoutCompat>
+            app:ads_id="@string/ads_test_native_id"
+            app:is_na="false" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

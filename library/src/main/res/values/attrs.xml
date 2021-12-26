@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="NativeAdView">
+        <attr name="ads_id" format="string" />
+        <attr name="is_na" format="boolean" />
+    </declare-styleable>
+</resources>

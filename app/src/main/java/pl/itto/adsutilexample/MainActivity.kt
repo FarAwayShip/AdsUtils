@@ -3,11 +3,8 @@ package pl.itto.adsutilexample
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -15,7 +12,8 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.nativead.NativeAd
-import pl.itto.adsutil.AdsUtil
+import pl.itto.adsutil.AdLoadCallback
+import pl.itto.adsutil.AdsManager
 import pl.itto.adsutilexample.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -34,52 +32,40 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun loadNativeBanner(view: View) {
-        mBinding.cardBanner.isVisible = true
-        mBinding.cardNative.isVisible = false
-        AdsUtil.instance.loadNativeAdsSmall(
-            this,
-            mBinding.cardBanner.findViewById(R.id.ads_container) as FrameLayout,
-            layoutInflater,
-            getString(R.string.ads_test_native_id),
-            object : AdsUtil.NativeAdsCallback {
-                override fun adLoaded(nativeAd: NativeAd) {
+        mBinding.bannerAds.load(object: AdLoadCallback<NativeAd> {
+            override fun onAdLoaded(ads: NativeAd) {
+                Log.d(TAG, "load banner ads successfully")
+            }
 
-                }
+            override fun onAdFailedToLoad() {
+                Log.d(TAG, "load banner ads failed")
+            }
 
-                override fun adLoadFailed() {
-                }
-
-            })
+        })
     }
 
     fun openNative(view: View) {
-        mBinding.cardBanner.isVisible = false
-        mBinding.cardNative.isVisible = true
-        AdsUtil.instance.loadNativeAds(
-            this,
-            mBinding.cardNative.findViewById(R.id.ads_container) as FrameLayout,
-            layoutInflater,
-            getString(R.string.ads_test_native_id),
-            object : AdsUtil.NativeAdsCallback {
-                override fun adLoaded(nativeAd: NativeAd) {
-                    Toast.makeText(this@MainActivity, "Ad was loaded.", Toast.LENGTH_SHORT).show()
-                }
+        mBinding.nativeAds.load(object: AdLoadCallback<NativeAd> {
+            override fun onAdLoaded(ads: NativeAd) {
+                Log.d(TAG, "load native ads successfully")
+            }
 
-                override fun adLoadFailed() {
-                    Toast.makeText(this@MainActivity, "Ad load failed.", Toast.LENGTH_SHORT).show()
-                }
+            override fun onAdFailedToLoad() {
+                Log.d(TAG, "load native ads failed")
+            }
 
-            })
+        })
     }
 
     fun interstitial(view: View) {
-        mBinding.cardBanner.isVisible = false
-        mBinding.cardNative.isVisible = false
-        AdsUtil.instance.loadInterstitial(
+        AdsManager.getInstance(application).showInterstitial(
             this,
             getString(R.string.ads_test_inter_id),
             object : InterstitialAdLoadCallback() {
                 override fun onAdLoaded(p0: InterstitialAd) {
+
+                    Log.d(TAG, "Load interstitial successfully")
+
                     super.onAdLoaded(p0)
                     mInterstitialAd = p0
                     mInterstitialAd?.fullScreenContentCallback = mFullScreenAdsCallback
@@ -90,6 +76,9 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onAdFailedToLoad(p0: LoadAdError) {
                     super.onAdFailedToLoad(p0)
+
+                    Log.d(TAG, "Load interstitial failed")
+
                     mInterstitialAd = null
                     // Do something after ads load failed
                 }

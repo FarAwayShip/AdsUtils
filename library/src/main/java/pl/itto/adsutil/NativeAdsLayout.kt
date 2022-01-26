@@ -18,7 +18,7 @@ import com.google.android.gms.ads.nativead.NativeAdOptions
 import com.google.android.gms.ads.nativead.NativeAdView
 import pl.itto.adsutil.Constants.PREF_NAME
 import pl.itto.adsutil.Constants.SHOW_ADS
-import pl.itto.adsutil.extension.dpToPx
+//import pl.itto.adsutil.extension.dpToPx
 
 class NativeAdsLayout : CardView {
 
@@ -30,7 +30,7 @@ class NativeAdsLayout : CardView {
         context.applicationContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
     init {
-        radius = context.dpToPx(10).toFloat()
+        radius = 10f
     }
 
     private lateinit var callback: AdLoadCallback<NativeAd>

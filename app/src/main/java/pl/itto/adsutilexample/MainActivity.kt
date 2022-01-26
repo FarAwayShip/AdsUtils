@@ -14,6 +14,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.nativead.NativeAd
 import pl.itto.adsutil.AdLoadCallback
 import pl.itto.adsutil.AdsManager
+import pl.itto.adsutil.applovin.AppLovinUtils
 import pl.itto.adsutilexample.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -58,31 +59,36 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun interstitial(view: View) {
-        AdsManager.getInstance(application).showInterstitial(
-            this,
-            getString(R.string.ads_test_inter_id),
-            object : InterstitialAdLoadCallback() {
-                override fun onAdLoaded(p0: InterstitialAd) {
+//        AdsManager.getInstance(application).showInterstitial(
+//            this,
+//            getString(R.string.ads_test_inter_id),
+//            object : InterstitialAdLoadCallback() {
+//                override fun onAdLoaded(p0: InterstitialAd) {
+//
+//                    Log.d(TAG, "Load interstitial successfully")
+//
+//                    super.onAdLoaded(p0)
+//                    mInterstitialAd = p0
+//                    mInterstitialAd?.fullScreenContentCallback = mFullScreenAdsCallback
+//                    if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+//                        mInterstitialAd?.show(this@MainActivity)
+//                    }
+//                }
+//
+//                override fun onAdFailedToLoad(p0: LoadAdError) {
+//                    super.onAdFailedToLoad(p0)
+//
+//                    Log.d(TAG, "Load interstitial failed")
+//
+//                    mInterstitialAd = null
+//                    // Do something after ads load failed
+//                }
+//            })
+        loadInterstitialAppLovin()
+    }
 
-                    Log.d(TAG, "Load interstitial successfully")
-
-                    super.onAdLoaded(p0)
-                    mInterstitialAd = p0
-                    mInterstitialAd?.fullScreenContentCallback = mFullScreenAdsCallback
-                    if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                        mInterstitialAd?.show(this@MainActivity)
-                    }
-                }
-
-                override fun onAdFailedToLoad(p0: LoadAdError) {
-                    super.onAdFailedToLoad(p0)
-
-                    Log.d(TAG, "Load interstitial failed")
-
-                    mInterstitialAd = null
-                    // Do something after ads load failed
-                }
-            })
+    fun loadInterstitialAppLovin(){
+        AppLovinUtils.getInstance(application).createInterstitialAd(this)
     }
 
     val mFullScreenAdsCallback = object : FullScreenContentCallback() {

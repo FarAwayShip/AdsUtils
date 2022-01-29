@@ -4,23 +4,30 @@ import android.app.Activity
 import android.app.Application
 import android.os.Handler
 import android.util.Log
+import android.view.ViewGroup
 import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxAdListener
 import com.applovin.mediation.MaxError
 import com.applovin.mediation.ads.MaxInterstitialAd
+import com.applovin.mediation.nativeAds.MaxNativeAdListener
+import com.applovin.mediation.nativeAds.MaxNativeAdLoader
+import com.applovin.mediation.nativeAds.MaxNativeAdView
+import pl.itto.adsutil.callback.NativeAdCallback
+import pl.itto.adsutil.model.NativeAdModel
+import pl.itto.adsutil.model.NetworkType
 import java.util.concurrent.TimeUnit
 
-class AppLovinUtils private constructor(application: Application) {
+class AppLovinAdsUtils private constructor(application: Application) {
     companion object {
         const val TAG = "AppLovinUtils"
-        fun getInstance(application: Application): AppLovinUtils = AppLovinUtils(application)
+        fun getInstance(application: Application): AppLovinAdsUtils = AppLovinAdsUtils(application)
     }
 
     private lateinit var interstitialAd: MaxInterstitialAd
     private var retryAttempt = 0.0
 
-    open fun createInterstitialAd(activity: Activity) {
-        interstitialAd = MaxInterstitialAd("df09f73ee22ed34e", activity)
+    fun loadInterstitialAd(adUnitId: String, activity: Activity) {
+        interstitialAd = MaxInterstitialAd(adUnitId, activity)
         interstitialAd.setListener(object : MaxAdListener {
             override fun onAdLoaded(ad: MaxAd?) {
                 Log.d(TAG, "onAdLoaded: ")
@@ -68,5 +75,46 @@ class AppLovinUtils private constructor(application: Application) {
         interstitialAd.loadAd()
     }
 
+    /**
+     * Load Native Ad
+     */
+    fun loadNativeAd(
+        nativeAdContainer: ViewGroup,
+        adUnitId: String,
+        activity: Activity,
+        adCallback: NativeAdCallback? = null
+    ) {
+        val nativeAdLoader = MaxNativeAdLoader(adUnitId, activity)
+        nativeAdLoader.setNativeAdListener(object : MaxNativeAdListener() {
+
+            override fun onNativeAdLoaded(nativeAdView: MaxNativeAdView, ad: MaxAd) {
+                // Clean up any pre-existing native ad to prevent memory leaks.
+//                if (nativeAd != null) {
+//                    nativeAdLoader.destroy(nativeAd)
+//                }
+                Log.d(TAG, "onNativeAdLoaded: ")
+
+                // Save ad for cleanup.
+                val nativeAd = NativeAdModel(NetworkType.APPLOVIN)
+                nativeAd.adObject = ad
+
+                // Add ad view to view.
+                nativeAdContainer.removeAllViews()
+                nativeAdContainer.addView(nativeAdView)
+                adCallback?.onAdLoaded(nativeAd)
+            }
+
+            override fun onNativeAdLoadFailed(adUnitId: String, error: MaxError) {
+                // We recommend retrying with exponentially higher delays up to a maximum delay
+                Log.e(TAG, "onNativeAdLoadFailed: $adUnitId - ${error.code} - ${error.message}")
+            }
+
+            override fun onNativeAdClicked(ad: MaxAd) {
+                // Optional click callback
+                Log.d(TAG, "onNativeAdClicked: ")
+            }
+        })
+        nativeAdLoader.loadAd()
+    }
 
 }

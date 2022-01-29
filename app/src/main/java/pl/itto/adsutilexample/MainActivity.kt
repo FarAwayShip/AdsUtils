@@ -5,16 +5,13 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.FullScreenContentCallback
-import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.nativead.NativeAd
 import pl.itto.adsutil.AdLoadCallback
 import pl.itto.adsutil.AdsManager
-import pl.itto.adsutil.applovin.AppLovinUtils
+import pl.itto.adsutil.model.AdUnitConfigMap
 import pl.itto.adsutilexample.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -30,10 +27,23 @@ class MainActivity : AppCompatActivity() {
         mBinding = ActivityMainBinding.inflate(layoutInflater)
 
         setContentView(mBinding.root)
+
+
+        val x = "{\n" +
+                "    \"inter_splash\": {\n" +
+                "        \"admob\": \"asdagsdasd\",\n" +
+                "        \"applovin\": \"asdasdasd\"\n" +
+                "    },\n" +
+                "    \"native_home\": {\n" +
+                "        \"admob\": \"asdagsdasd\",\n" +
+                "        \"applovin\": \"asdasdasd\"\n" +
+                "    }\n" +
+                "}"
+        AdUnitConfigMap.fromJson(x)
     }
 
     fun loadNativeBanner(view: View) {
-        mBinding.bannerAds.load(object: AdLoadCallback<NativeAd> {
+        mBinding.bannerAds.load(object : AdLoadCallback<NativeAd> {
             override fun onAdLoaded(ads: NativeAd) {
                 Log.d(TAG, "load banner ads successfully")
             }
@@ -46,7 +56,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun openNative(view: View) {
-        mBinding.nativeAds.load(object: AdLoadCallback<NativeAd> {
+        mBinding.nativeAds.load(object : AdLoadCallback<NativeAd> {
             override fun onAdLoaded(ads: NativeAd) {
                 Log.d(TAG, "load native ads successfully")
             }
@@ -87,8 +97,8 @@ class MainActivity : AppCompatActivity() {
         loadInterstitialAppLovin()
     }
 
-    fun loadInterstitialAppLovin(){
-        AppLovinUtils.getInstance(application).createInterstitialAd(this)
+    fun loadInterstitialAppLovin() {
+        AdsManager.getInstance(application).loadInterstitialAds("inter_splash",this)
     }
 
     val mFullScreenAdsCallback = object : FullScreenContentCallback() {

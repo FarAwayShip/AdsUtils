@@ -7,11 +7,14 @@ import android.util.Log
 import android.view.ViewGroup
 import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxAdListener
+import com.applovin.mediation.MaxAdRevenueListener
 import com.applovin.mediation.MaxError
 import com.applovin.mediation.ads.MaxInterstitialAd
 import com.applovin.mediation.nativeAds.MaxNativeAdListener
 import com.applovin.mediation.nativeAds.MaxNativeAdLoader
 import com.applovin.mediation.nativeAds.MaxNativeAdView
+import com.applovin.mediation.nativeAds.MaxNativeAdViewBinder
+import pl.itto.adsutil.R
 import pl.itto.adsutil.callback.NativeAdCallback
 import pl.itto.adsutil.model.NativeAdModel
 import pl.itto.adsutil.model.NetworkType
@@ -116,5 +119,7 @@ class AppLovinAdsUtils private constructor(application: Application) {
         })
         nativeAdLoader.loadAd()
     }
+
+
 
 }

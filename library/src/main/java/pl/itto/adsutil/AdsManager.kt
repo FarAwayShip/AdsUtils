@@ -9,7 +9,11 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import android.widget.FrameLayout
 import androidx.annotation.RawRes
+import com.applovin.mediation.MaxAdRevenueListener
+import com.applovin.mediation.nativeAds.MaxNativeAdView
+import com.applovin.mediation.nativeAds.MaxNativeAdViewBinder
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.interstitial.InterstitialAd
@@ -83,11 +87,28 @@ class AdsManager private constructor(val application: Application) {
     }
 
     fun loadInterstitialAds(adUnitName: String, activity: Activity) {
+        /**
+         * Load interstitial ad
+         */
         Log.d(TAG, "loadInterstitialAds: $adUnitName")
         val adsId = adUnitConfigMap.getAdsId(adUnitName, networkType.getName())
         when (networkType) {
             NetworkType.APPLOVIN -> {
                 AppLovinAdsUtils.getInstance(application).loadInterstitialAd(adsId, activity)
+            }
+            else -> {
+                Log.e(TAG, "Not found Network type for $networkType")
+            }
+        }
+    }
+
+    fun loadNativeAds(adUnitName: String, adsContainer: FrameLayout, activity: Activity) {
+        Log.d(TAG, "loadNativeAds: $adUnitName")
+        val adsId = adUnitConfigMap.getAdsId(adUnitName, networkType.getName())
+        when (networkType) {
+            NetworkType.APPLOVIN -> {
+                AppLovinAdsUtils.getInstance(application)
+                    .loadNativeAd(adsContainer, adsId, activity)
             }
             else -> {
                 Log.e(TAG, "Not found Network type for $networkType")

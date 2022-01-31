@@ -11,8 +11,8 @@ android {
         applicationId "pl.itto.adsutilexample"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0.1"
+        versionCode getDates()
+        versionName "1.1.0-beta1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -38,6 +38,10 @@ android {
         abortOnError false
     }
 
+}
+
+def static getDates() {
+    return new Date().format('yyyyMMddHH').toInteger()
 }
 
 dependencies {

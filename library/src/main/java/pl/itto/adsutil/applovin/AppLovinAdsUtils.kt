@@ -7,15 +7,14 @@ import android.util.Log
 import android.view.ViewGroup
 import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxAdListener
-import com.applovin.mediation.MaxAdRevenueListener
 import com.applovin.mediation.MaxError
 import com.applovin.mediation.ads.MaxInterstitialAd
 import com.applovin.mediation.nativeAds.MaxNativeAdListener
 import com.applovin.mediation.nativeAds.MaxNativeAdLoader
 import com.applovin.mediation.nativeAds.MaxNativeAdView
-import com.applovin.mediation.nativeAds.MaxNativeAdViewBinder
-import pl.itto.adsutil.R
+import pl.itto.adsutil.callback.InterstitialAdCallback
 import pl.itto.adsutil.callback.NativeAdCallback
+import pl.itto.adsutil.model.InterstitialAdModel
 import pl.itto.adsutil.model.NativeAdModel
 import pl.itto.adsutil.model.NetworkType
 import java.util.concurrent.TimeUnit
@@ -27,32 +26,39 @@ class AppLovinAdsUtils private constructor(application: Application) {
     }
 
     private lateinit var interstitialAd: MaxInterstitialAd
-    private var retryAttempt = 0.0
 
-    fun loadInterstitialAd(adUnitId: String, activity: Activity) {
+    fun loadInterstitialAd(
+        adUnitId: String,
+        activity: Activity,
+        showNow: Boolean = true,
+        callback: InterstitialAdCallback? = null
+    ) {
         interstitialAd = MaxInterstitialAd(adUnitId, activity)
         interstitialAd.setListener(object : MaxAdListener {
-            override fun onAdLoaded(ad: MaxAd?) {
+            override fun onAdLoaded(ad: MaxAd) {
                 Log.d(TAG, "onAdLoaded: ")
                 // Interstitial ad is ready to be shown. interstitialAd.isReady() will now return 'true'
-
-                // Reset retry attempt
-                retryAttempt = 0.0
-                interstitialAd.showAd()
+                callback?.onAdLoaded(InterstitialAdModel(NetworkType.APPLOVIN).apply {
+                    adObject = interstitialAd
+                })
+                if (showNow) interstitialAd.showAd()
             }
 
-            override fun onAdDisplayed(ad: MaxAd?) {
+            override fun onAdDisplayed(ad: MaxAd) {
                 Log.d(TAG, "onAdDisplayed: ")
+                callback?.onAdDisplayed()
             }
 
-            override fun onAdHidden(ad: MaxAd?) {
+            override fun onAdHidden(ad: MaxAd) {
                 Log.d(TAG, "onAdHidden: ")
                 // Interstitial ad is hidden. Pre-load the next ad
 //                interstitialAd.loadAd()
+                callback?.onAdHidden()
             }
 
-            override fun onAdClicked(ad: MaxAd?) {
+            override fun onAdClicked(ad: MaxAd) {
                 Log.d(TAG, "onAdClicked: ")
+                callback?.onAdClicked()
             }
 
             override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {
@@ -60,17 +66,19 @@ class AppLovinAdsUtils private constructor(application: Application) {
                 // Interstitial ad failed to load
                 // AppLovin recommends that you retry with exponentially higher delays up to a maximum delay (in this case 64 seconds)
 
-                retryAttempt++
-                val delayMillis =
-                    TimeUnit.SECONDS.toMillis(Math.pow(2.0, Math.min(6.0, retryAttempt)).toLong())
-
-                Handler().postDelayed({ interstitialAd.loadAd() }, delayMillis)
+//                retryAttempt++
+//                val delayMillis =
+//                    TimeUnit.SECONDS.toMillis(Math.pow(2.0, Math.min(6.0, retryAttempt)).toLong())
+//
+//                Handler().postDelayed({ interstitialAd.loadAd() }, delayMillis)
+                callback?.onAdLoadFailed("Applovin: $adUnitId - $error")
             }
 
             override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) {
                 Log.d(TAG, "onAdDisplayFailed: ")
                 // Interstitial ad failed to display. AppLovin recommends that you load the next ad.
-                interstitialAd.loadAd()
+//                interstitialAd.loadAd()
+                callback?.onAdDisplayFailed()
             }
         })
 
@@ -85,6 +93,7 @@ class AppLovinAdsUtils private constructor(application: Application) {
         nativeAdContainer: ViewGroup,
         adUnitId: String,
         activity: Activity,
+        existNativeAd: NativeAdModel? = null,
         adCallback: NativeAdCallback? = null
     ) {
         val nativeAdLoader = MaxNativeAdLoader(adUnitId, activity)
@@ -92,9 +101,11 @@ class AppLovinAdsUtils private constructor(application: Application) {
 
             override fun onNativeAdLoaded(nativeAdView: MaxNativeAdView, ad: MaxAd) {
                 // Clean up any pre-existing native ad to prevent memory leaks.
-//                if (nativeAd != null) {
-//                    nativeAdLoader.destroy(nativeAd)
-//                }
+                if (existNativeAd != null) {
+                    existNativeAd.adObject?.let {
+                        nativeAdLoader.destroy((it as MaxAd))
+                    }
+                }
                 Log.d(TAG, "onNativeAdLoaded: ")
 
                 // Save ad for cleanup.
@@ -110,16 +121,17 @@ class AppLovinAdsUtils private constructor(application: Application) {
             override fun onNativeAdLoadFailed(adUnitId: String, error: MaxError) {
                 // We recommend retrying with exponentially higher delays up to a maximum delay
                 Log.e(TAG, "onNativeAdLoadFailed: $adUnitId - ${error.code} - ${error.message}")
+                adCallback?.onAdLoadFailed("Applovin - ${error.code} - ${error.message}")
             }
 
             override fun onNativeAdClicked(ad: MaxAd) {
                 // Optional click callback
                 Log.d(TAG, "onNativeAdClicked: ")
+                adCallback?.onAdClicked()
             }
         })
         nativeAdLoader.loadAd()
     }
-
 
 
 }

@@ -8,11 +8,12 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.nativead.NativeAd
-import pl.itto.adsutil.AdLoadCallback
 import pl.itto.adsutil.AdsManager
-import pl.itto.adsutil.applovin.AppLovinAdsUtils
+import pl.itto.adsutil.callback.InterstitialAdCallback
+import pl.itto.adsutil.callback.NativeAdCallback
 import pl.itto.adsutil.model.AdUnitConfigMap
+import pl.itto.adsutil.model.InterstitialAdModel
+import pl.itto.adsutil.model.NativeAdModel
 import pl.itto.adsutilexample.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -23,6 +24,11 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mBinding: ActivityMainBinding
     var mInterstitialAd: InterstitialAd? = null
+
+    var nativeAdMediumModel: NativeAdModel? = null
+    var nativeAdBannerModel: NativeAdModel? = null
+    var interstitialAdModel: InterstitialAdModel? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -41,7 +47,31 @@ class MainActivity : AppCompatActivity() {
                 "    }\n" +
                 "}"
         AdUnitConfigMap.fromJson(x)
+        AdsManager.getInstance(application)
+            .loadInterstitialAds("inter_splash", this, false, object : InterstitialAdCallback {
+                override fun onAdLoaded(ad: InterstitialAdModel) {
+                    interstitialAdModel = ad
+                }
+
+                override fun onAdLoadFailed(message: String?) {
+
+                }
+
+                override fun onAdClicked() {
+                }
+
+                override fun onAdHidden() {
+                }
+
+                override fun onAdDisplayed() {
+                }
+
+                override fun onAdDisplayFailed() {
+                }
+
+            })
     }
+
 
     fun loadNativeBanner(view: View) {
 //        mBinding.bannerAds.load(object : AdLoadCallback<NativeAd> {
@@ -55,7 +85,23 @@ class MainActivity : AppCompatActivity() {
 //
 //        })
         AdsManager.getInstance(application)
-            .loadNativeAds("native_home", mBinding.adsNativeBannerContainer, this)
+            .loadNativeAds(
+                "native_home",
+                mBinding.adsNativeBannerContainer,
+                this,
+                nativeAdBannerModel,
+                object : NativeAdCallback {
+                    override fun onAdLoaded(adModel: NativeAdModel) {
+                        nativeAdBannerModel = adModel
+                    }
+
+                    override fun onAdClicked() {
+                    }
+
+                    override fun onAdLoadFailed(message: String?) {
+                        Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+                    }
+                })
     }
 
     fun openNative(view: View) {
@@ -70,7 +116,24 @@ class MainActivity : AppCompatActivity() {
 //
 //        })
         AdsManager.getInstance(application)
-            .loadNativeAds("native_setting", mBinding.adsContainer, this)
+            .loadNativeAds(
+                "native_setting",
+                mBinding.adsContainer,
+                this,
+                nativeAdMediumModel,
+                object : NativeAdCallback {
+                    override fun onAdLoaded(adModel: NativeAdModel) {
+                        nativeAdMediumModel = adModel
+                    }
+
+                    override fun onAdClicked() {
+                    }
+
+                    override fun onAdLoadFailed(message: String?) {
+                        Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+                    }
+
+                })
     }
 
     fun interstitial(view: View) {
@@ -99,11 +162,15 @@ class MainActivity : AppCompatActivity() {
 //                    // Do something after ads load failed
 //                }
 //            })
-        loadInterstitialAppLovin()
+//        loadInterstitialAppLovin()
+        if (interstitialAdModel != null) {
+            interstitialAdModel?.show(this)
+        }
     }
 
     fun loadInterstitialAppLovin() {
-        AdsManager.getInstance(application).loadInterstitialAds("inter_splash", this)
+        AdsManager.getInstance(application)
+            .loadInterstitialAds("inter_splash", this, false)
     }
 
     val mFullScreenAdsCallback = object : FullScreenContentCallback() {
@@ -131,5 +198,11 @@ class MainActivity : AppCompatActivity() {
 //            goToMainScreen()
 //            mViewModel.onAdsShow()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        AdsManager.getInstance(application).destroyNativeAd(nativeAdBannerModel)
+        AdsManager.getInstance(application).destroyNativeAd(nativeAdMediumModel)
     }
 }

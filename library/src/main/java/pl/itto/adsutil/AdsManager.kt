@@ -11,6 +11,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import android.widget.FrameLayout
 import androidx.annotation.RawRes
+import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxAdRevenueListener
 import com.applovin.mediation.nativeAds.MaxNativeAdView
 import com.applovin.mediation.nativeAds.MaxNativeAdViewBinder
@@ -24,7 +25,10 @@ import pl.itto.adsutil.Constants.SHOW_ADS
 import com.applovin.sdk.AppLovinSdk
 import com.applovin.sdk.AppLovinSdk.SdkInitializationListener
 import pl.itto.adsutil.applovin.AppLovinAdsUtils
+import pl.itto.adsutil.callback.InterstitialAdCallback
+import pl.itto.adsutil.callback.NativeAdCallback
 import pl.itto.adsutil.model.AdUnitConfigMap
+import pl.itto.adsutil.model.NativeAdModel
 import pl.itto.adsutil.model.NetworkType
 
 
@@ -86,15 +90,28 @@ class AdsManager private constructor(val application: Application) {
         pref.edit().putBoolean(SHOW_ADS, isShow).apply()
     }
 
-    fun loadInterstitialAds(adUnitName: String, activity: Activity) {
+    val isAdEnabled: Boolean
+        get() = pref.getBoolean(SHOW_ADS, true)
+
+    fun loadInterstitialAds(
+        adUnitName: String,
+        activity: Activity,
+        showNow: Boolean = true,
+        callback: InterstitialAdCallback? = null
+    ) {
         /**
          * Load interstitial ad
          */
-        Log.d(TAG, "loadInterstitialAds: $adUnitName")
+        Log.d(TAG, "loadInterstitialAds: $adUnitName --showNow: $showNow")
+        if (!isAdEnabled) {
+            Log.i(TAG, "Ads disabled, ignore loading ads")
+            return
+        }
         val adsId = adUnitConfigMap.getAdsId(adUnitName, networkType.getName())
         when (networkType) {
             NetworkType.APPLOVIN -> {
-                AppLovinAdsUtils.getInstance(application).loadInterstitialAd(adsId, activity)
+                AppLovinAdsUtils.getInstance(application)
+                    .loadInterstitialAd(adsId, activity, showNow, callback)
             }
             else -> {
                 Log.e(TAG, "Not found Network type for $networkType")
@@ -102,13 +119,27 @@ class AdsManager private constructor(val application: Application) {
         }
     }
 
-    fun loadNativeAds(adUnitName: String, adsContainer: FrameLayout, activity: Activity) {
+    /**
+     * Load Native ads,
+     * We will pass a adUnitName, from here adsId will be parse by AdUnitName + AdNetworkType
+     */
+    fun loadNativeAds(
+        adUnitName: String,
+        adsContainer: FrameLayout,
+        activity: Activity,
+        existAdModel: NativeAdModel? = null,
+        callback: NativeAdCallback? = null
+    ) {
+        if (!isAdEnabled) {
+            Log.i(TAG, "Ads disabled, ignore loading ads")
+            return
+        }
         Log.d(TAG, "loadNativeAds: $adUnitName")
         val adsId = adUnitConfigMap.getAdsId(adUnitName, networkType.getName())
         when (networkType) {
             NetworkType.APPLOVIN -> {
                 AppLovinAdsUtils.getInstance(application)
-                    .loadNativeAd(adsContainer, adsId, activity)
+                    .loadNativeAd(adsContainer, adsId, activity, existAdModel, callback)
             }
             else -> {
                 Log.e(TAG, "Not found Network type for $networkType")
@@ -122,6 +153,29 @@ class AdsManager private constructor(val application: Application) {
             val adRequest = AdRequest.Builder().build()
             InterstitialAd.load(context, adsId, adRequest, listener)
         }
+    }
+
+    fun destroyNativeAd(nativeAdsModel: NativeAdModel? = null) {
+        Log.d(TAG, "destroyNativeAd: $nativeAdsModel")
+        try {
+            nativeAdsModel?.let {
+                when (networkType) {
+                    NetworkType.APPLOVIN -> {
+                        it.applovinAdLoader?.let { loader ->
+                            if (it.adObject != null) {
+                                loader.destroy(it.adObject as MaxAd)
+                            }
+                        }
+                    }
+                    else -> {
+
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error when destroy NativeAd: ", e)
+        }
+
     }
 
 

@@ -5,6 +5,7 @@ import android.app.Application
 import android.os.Handler
 import android.util.Log
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentActivity
 import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxAdListener
 import com.applovin.mediation.MaxError
@@ -29,7 +30,7 @@ class AppLovinAdsUtils private constructor(application: Application) {
 
     fun loadInterstitialAd(
         adUnitId: String,
-        activity: Activity,
+        activity: FragmentActivity,
         showNow: Boolean = true,
         callback: InterstitialAdCallback? = null
     ) {
@@ -38,10 +39,11 @@ class AppLovinAdsUtils private constructor(application: Application) {
             override fun onAdLoaded(ad: MaxAd) {
                 Log.d(TAG, "onAdLoaded: ")
                 // Interstitial ad is ready to be shown. interstitialAd.isReady() will now return 'true'
-                callback?.onAdLoaded(InterstitialAdModel(NetworkType.APPLOVIN).apply {
+                val adModel =InterstitialAdModel(NetworkType.APPLOVIN).apply {
                     adObject = interstitialAd
-                })
-                if (showNow) interstitialAd.showAd()
+                }
+                callback?.onAdLoaded(adModel)
+                if (showNow) adModel.show(activity)
             }
 
             override fun onAdDisplayed(ad: MaxAd) {

@@ -15,6 +15,7 @@ import pl.itto.adsutil.model.AdUnitConfigMap
 import pl.itto.adsutil.model.InterstitialAdModel
 import pl.itto.adsutil.model.NativeAdModel
 import pl.itto.adsutilexample.databinding.ActivityMainBinding
+import kotlin.math.log
 
 class MainActivity : AppCompatActivity() {
 
@@ -48,25 +49,30 @@ class MainActivity : AppCompatActivity() {
                 "}"
         AdUnitConfigMap.fromJson(x)
         AdsManager.getInstance(application)
-            .loadInterstitialAds("inter_splash", this, false, object : InterstitialAdCallback {
+            .loadInterstitialAds("inter_splash", this, true, object : InterstitialAdCallback {
                 override fun onAdLoaded(ad: InterstitialAdModel) {
                     interstitialAdModel = ad
                 }
 
                 override fun onAdLoadFailed(message: String?) {
+                    Log.d(TAG, "onAdLoadFailed: ")
 
                 }
 
                 override fun onAdClicked() {
+                    Log.d(TAG, "onAdClicked: ")
                 }
 
                 override fun onAdHidden() {
+                    Log.d(TAG, "onAdHidden: ")
                 }
 
                 override fun onAdDisplayed() {
+                    Log.d(TAG, "onAdDisplayed: ")
                 }
 
                 override fun onAdDisplayFailed() {
+                    Log.d(TAG, "onAdDisplayFailed: ")
                 }
 
             })

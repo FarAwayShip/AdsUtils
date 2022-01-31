@@ -11,6 +11,8 @@ import android.content.SharedPreferences
 import android.util.Log
 import android.widget.FrameLayout
 import androidx.annotation.RawRes
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxAdRevenueListener
 import com.applovin.mediation.nativeAds.MaxNativeAdView
@@ -95,7 +97,7 @@ class AdsManager private constructor(val application: Application) {
 
     fun loadInterstitialAds(
         adUnitName: String,
-        activity: Activity,
+        activity: FragmentActivity,
         showNow: Boolean = true,
         callback: InterstitialAdCallback? = null
     ) {

@@ -9,6 +9,4 @@ class AdmobAdsUtils private constructor(application: Application) {
         fun getInstance(application: Application): AdmobAdsUtils = AdmobAdsUtils(application)
     }
 
-
-
 }

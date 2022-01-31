@@ -11,8 +11,12 @@ class InterstitialAdModel(adNetworkType: NetworkType = NetworkType.UN_DEFINED) :
         this.adNetworkType = adNetworkType
     }
 
-    fun show(activity: FragmentActivity) {
+    fun show(activity: FragmentActivity?) {
         Log.d(TAG, "show: $adNetworkType")
+        if (activity == null) {
+            Log.d(TAG, "InterstitialAd not showed due to activity null: ")
+            return
+        }
         if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
             when (adNetworkType) {
                 NetworkType.APPLOVIN -> {

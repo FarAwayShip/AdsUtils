@@ -2,6 +2,7 @@ package pl.itto.adsutil.applovin
 
 import android.app.Activity
 import android.app.Application
+import android.content.Context
 import android.os.Handler
 import android.util.Log
 import android.view.ViewGroup
@@ -13,6 +14,8 @@ import com.applovin.mediation.ads.MaxInterstitialAd
 import com.applovin.mediation.nativeAds.MaxNativeAdListener
 import com.applovin.mediation.nativeAds.MaxNativeAdLoader
 import com.applovin.mediation.nativeAds.MaxNativeAdView
+import com.applovin.sdk.AppLovinSdk
+import pl.itto.adsutil.BaseAdsUtils
 import pl.itto.adsutil.callback.InterstitialAdCallback
 import pl.itto.adsutil.callback.NativeAdCallback
 import pl.itto.adsutil.model.InterstitialAdModel
@@ -20,7 +23,7 @@ import pl.itto.adsutil.model.NativeAdModel
 import pl.itto.adsutil.model.NetworkType
 import java.util.concurrent.TimeUnit
 
-class AppLovinAdsUtils private constructor(application: Application) {
+class AppLovinAdsUtils private constructor(application: Application) : BaseAdsUtils {
     companion object {
         const val TAG = "AppLovinUtils"
         fun getInstance(application: Application): AppLovinAdsUtils = AppLovinAdsUtils(application)
@@ -39,7 +42,7 @@ class AppLovinAdsUtils private constructor(application: Application) {
             override fun onAdLoaded(ad: MaxAd) {
                 Log.d(TAG, "onAdLoaded: ")
                 // Interstitial ad is ready to be shown. interstitialAd.isReady() will now return 'true'
-                val adModel =InterstitialAdModel(NetworkType.APPLOVIN).apply {
+                val adModel = InterstitialAdModel(NetworkType.APPLOVIN).apply {
                     adObject = interstitialAd
                 }
                 callback?.onAdLoaded(adModel)
@@ -133,6 +136,15 @@ class AppLovinAdsUtils private constructor(application: Application) {
             }
         })
         nativeAdLoader.loadAd()
+    }
+
+    override fun initSdk(context: Context) {
+        AppLovinSdk.getInstance(context).mediationProvider = "max"
+        AppLovinSdk.initializeSdk(context, AppLovinSdk.SdkInitializationListener {
+            // AppLovin SDK is initialized, start loading ads
+        })
+        AppLovinSdk.getInstance(context).settings.testDeviceAdvertisingIds =
+            arrayListOf("62b93127-cdeb-4f68-9cda-50342f9b3a3f")
     }
 
 

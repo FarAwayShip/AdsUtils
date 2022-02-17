@@ -66,6 +66,9 @@ dependencies {
 
     // Applovin
     implementation("com.applovin:applovin-sdk:11.0.0")
+
+    // Unity
+    implementation files('libs/unity-ads.aar')
 }
 task androidSourcesJar(type: Jar) {
     classifier 'sources'

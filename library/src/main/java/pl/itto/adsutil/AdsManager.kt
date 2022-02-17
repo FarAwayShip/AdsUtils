@@ -11,21 +11,15 @@ import android.content.SharedPreferences
 import android.util.Log
 import android.widget.FrameLayout
 import androidx.annotation.RawRes
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.applovin.mediation.MaxAd
-import com.applovin.mediation.MaxAdRevenueListener
-import com.applovin.mediation.nativeAds.MaxNativeAdView
-import com.applovin.mediation.nativeAds.MaxNativeAdViewBinder
 import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import pl.itto.adsutil.Constants.PREF_NAME
 import pl.itto.adsutil.Constants.SHOW_ADS
 
-import com.applovin.sdk.AppLovinSdk
-import com.applovin.sdk.AppLovinSdk.SdkInitializationListener
+import pl.itto.adsutil.admob.AdmobAdsUtils
 import pl.itto.adsutil.applovin.AppLovinAdsUtils
 import pl.itto.adsutil.callback.InterstitialAdCallback
 import pl.itto.adsutil.callback.NativeAdCallback
@@ -54,13 +48,8 @@ class AdsManager private constructor(val application: Application) {
     fun initAdsSdk(context: Context) {
         try {
             Log.d(TAG, "initAdsSdk: ")
-            MobileAds.initialize(context)
-            AppLovinSdk.getInstance(context).mediationProvider = "max"
-            AppLovinSdk.initializeSdk(context, SdkInitializationListener {
-                // AppLovin SDK is initialized, start loading ads
-            })
-            AppLovinSdk.getInstance(context).settings.testDeviceAdvertisingIds =
-                arrayListOf("62b93127-cdeb-4f68-9cda-50342f9b3a3f")
+            AdmobAdsUtils.getInstance(application).initSdk(context)
+            AppLovinAdsUtils
         } catch (e: Exception) {
             Log.e(TAG, "initAdsSdk Failed", e)
         }

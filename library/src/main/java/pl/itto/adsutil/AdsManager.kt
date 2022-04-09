@@ -49,7 +49,6 @@ class AdsManager private constructor(val application: Application) {
         try {
             Log.d(TAG, "initAdsSdk: ")
             AdmobAdsUtils.getInstance(application).initSdk(context)
-            AppLovinAdsUtils
         } catch (e: Exception) {
             Log.e(TAG, "initAdsSdk Failed", e)
         }
@@ -100,9 +99,9 @@ class AdsManager private constructor(val application: Application) {
         }
         val adsId = adUnitConfigMap.getAdsId(adUnitName, networkType.getName())
         when (networkType) {
-            NetworkType.APPLOVIN -> {
-                AppLovinAdsUtils.getInstance(application)
-                    .loadInterstitialAd(adsId, activity, showNow, callback)
+            NetworkType.ADMOB -> {
+                AdmobAdsUtils.getInstance(application)
+                    .loadInterstitialAds(adsId, activity, showNow, callback)
             }
             else -> {
                 Log.e(TAG, "Not found Network type for $networkType")
@@ -128,8 +127,8 @@ class AdsManager private constructor(val application: Application) {
         Log.d(TAG, "loadNativeAds: $adUnitName")
         val adsId = adUnitConfigMap.getAdsId(adUnitName, networkType.getName())
         when (networkType) {
-            NetworkType.APPLOVIN -> {
-                AppLovinAdsUtils.getInstance(application)
+            NetworkType.ADMOB -> {
+                AdmobAdsUtils.getInstance(application)
                     .loadNativeAd(adsContainer, adsId, activity, existAdModel, callback)
             }
             else -> {

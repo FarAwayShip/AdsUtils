@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
                     Log.d(TAG, "onAdClicked: ")
                 }
 
-                override fun onAdHidden() {
+                override fun onAdDismissed() {
                     Log.d(TAG, "onAdHidden: ")
                 }
 

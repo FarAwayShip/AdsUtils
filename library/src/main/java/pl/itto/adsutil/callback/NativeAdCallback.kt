@@ -6,4 +6,6 @@ interface NativeAdCallback {
     fun onAdLoaded(adModel: NativeAdModel)
     fun onAdClicked()
     fun onAdLoadFailed(message:String? = null)
+    fun onAdImpression()
+    fun onAdClosed()
 }

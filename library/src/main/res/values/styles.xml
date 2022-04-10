@@ -2,7 +2,7 @@
 <resources>
 
     <style name="AdAttribution">
-        <item name="android:textSize">8.0sp</item>
+        <item name="android:textSize">10.0sp</item>
         <item name="android:textColor">#ffffff</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_gravity">left</item>

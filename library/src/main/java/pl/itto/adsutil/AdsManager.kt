@@ -12,15 +12,14 @@ import android.util.Log
 import android.widget.FrameLayout
 import androidx.annotation.RawRes
 import androidx.fragment.app.FragmentActivity
-import com.applovin.mediation.MaxAd
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.gms.ads.nativead.NativeAd
 import pl.itto.adsutil.Constants.PREF_NAME
 import pl.itto.adsutil.Constants.SHOW_ADS
 
 import pl.itto.adsutil.admob.AdmobAdsUtils
-import pl.itto.adsutil.applovin.AppLovinAdsUtils
 import pl.itto.adsutil.callback.InterstitialAdCallback
 import pl.itto.adsutil.callback.NativeAdCallback
 import pl.itto.adsutil.model.AdUnitConfigMap
@@ -129,7 +128,7 @@ class AdsManager private constructor(val application: Application) {
         when (networkType) {
             NetworkType.ADMOB -> {
                 AdmobAdsUtils.getInstance(application)
-                    .loadNativeAd(adsContainer, adsId, activity, existAdModel, callback)
+                    .loadNativeAds(adsId, adsContainer, activity, existAdModel, callback)
             }
             else -> {
                 Log.e(TAG, "Not found Network type for $networkType")
@@ -148,17 +147,22 @@ class AdsManager private constructor(val application: Application) {
     fun destroyNativeAd(nativeAdsModel: NativeAdModel? = null) {
         Log.d(TAG, "destroyNativeAd: $nativeAdsModel")
         try {
-            nativeAdsModel?.let {
+            nativeAdsModel?.let { it ->
                 when (networkType) {
-                    NetworkType.APPLOVIN -> {
-                        it.applovinAdLoader?.let { loader ->
-                            if (it.adObject != null) {
-                                loader.destroy(it.adObject as MaxAd)
-                            }
+//                    NetworkType.APPLOVIN -> {
+//                        it.applovinAdLoader?.let { loader ->
+//                            if (it.adObject != null) {
+//                                loader.destroy(it.adObject as MaxAd)
+//                            }
+//                        }
+//                    }
+                    NetworkType.ADMOB -> {
+                        it.adObject?.let { adObject ->
+                            (adObject as NativeAd).destroy()
                         }
                     }
                     else -> {
-
+                        Log.e(TAG, "destroyNativeAd Failed by no valid NetworkType: " )
                     }
                 }
             }

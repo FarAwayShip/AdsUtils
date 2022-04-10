@@ -10,7 +10,7 @@ class MainApp : Application() {
         AdsManager.getInstance(this).let {
             it.initAdsSdk(this)
             it.loadAdUnitsConfigFromResource(R.raw.ad_units)
-            it.networkType = NetworkType.APPLOVIN
+            it.networkType = NetworkType.ADMOB
         }
     }
 }

@@ -71,6 +71,10 @@ class MainActivity : AppCompatActivity() {
                     Log.d(TAG, "onAdDisplayed: ")
                 }
 
+                override fun onAdImpression() {
+                    Log.d(TAG, "onAdImpression: ")
+                }
+
                 override fun onAdDisplayFailed() {
                     Log.d(TAG, "onAdDisplayFailed: ")
                 }
@@ -107,6 +111,12 @@ class MainActivity : AppCompatActivity() {
                     override fun onAdLoadFailed(message: String?) {
                         Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
                     }
+
+                    override fun onAdImpression() {
+                    }
+
+                    override fun onAdClosed() {
+                    }
                 })
     }
 
@@ -137,6 +147,12 @@ class MainActivity : AppCompatActivity() {
 
                     override fun onAdLoadFailed(message: String?) {
                         Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+                    }
+
+                    override fun onAdImpression() {
+                    }
+
+                    override fun onAdClosed() {
                     }
 
                 })

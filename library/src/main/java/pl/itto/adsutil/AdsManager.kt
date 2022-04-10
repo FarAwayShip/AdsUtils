@@ -56,7 +56,7 @@ class AdsManager private constructor(val application: Application) {
     /**
      * Load all ad units into a Map
      */
-    private fun loadAdUnitsConfig(jsonString: String) {
+    fun loadAdUnitsConfig(jsonString: String) {
         Log.d(TAG, "loadAdUnitsConfig: ")
         adUnitConfigMap = AdUnitConfigMap.fromJson(jsonString)
     }

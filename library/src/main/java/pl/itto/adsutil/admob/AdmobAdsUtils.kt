@@ -40,6 +40,7 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
             // Set other ad assets.
             adView.headlineView = adView.findViewById(R.id.ad_headline)
             adView.bodyView = adView.findViewById(R.id.ad_body)
+            adView.bodyView.isClickable = false
             adView.callToActionView = adView.findViewById(R.id.ad_call_to_action)
             adView.iconView = adView.findViewById(R.id.ad_app_icon)
             adView.priceView = adView.findViewById(R.id.ad_price)
@@ -49,7 +50,7 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
             adView.storeView = adView.findViewById(R.id.ad_store)
             adView.storeView.isClickable = false
             adView.advertiserView = adView.findViewById(R.id.ad_advertiser)
-
+            adView.advertiserView.isClickable = false
             // The headline and media content are guaranteed to be in every UnifiedNativeAd.
             (adView.headlineView as TextView).text = nativeAd.headline
             adView.mediaView.setMediaContent(nativeAd.mediaContent)

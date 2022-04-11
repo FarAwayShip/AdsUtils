@@ -23,6 +23,7 @@ import pl.itto.adsutil.admob.AdmobAdsUtils
 import pl.itto.adsutil.callback.InterstitialAdCallback
 import pl.itto.adsutil.callback.NativeAdCallback
 import pl.itto.adsutil.model.AdUnitConfigMap
+import pl.itto.adsutil.model.InterstitialAdModel
 import pl.itto.adsutil.model.NativeAdModel
 import pl.itto.adsutil.model.NetworkType
 
@@ -141,12 +142,18 @@ class AdsManager private constructor(val application: Application) {
         }
     }
 
-    fun showInterstitial(context: Context, adsId: String, listener: InterstitialAdLoadCallback) {
-        val showAds = pref.getBoolean(SHOW_ADS, true)
-        if (showAds) {
-            val adRequest = AdRequest.Builder().build()
-            InterstitialAd.load(context, adsId, adRequest, listener)
+    /**
+     * Show the loaded interstitial ads
+     */
+    fun showInterstitial(
+        activity: FragmentActivity,
+        interstitialAdModel: InterstitialAdModel,
+        callback: InterstitialAdCallback? = null
+    ) {
+        interstitialAdModel.adObject?.let {
+            interstitialAdModel.show(activity, callback)
         }
+
     }
 
     fun destroyNativeAd(nativeAdsModel: NativeAdModel? = null) {

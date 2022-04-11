@@ -44,5 +44,13 @@ class AdUnitConfigMap : HashMap<String, HashMap<String, String>>() {
 
             return result
         }
+
+        fun fromMap(map: Map<String, HashMap<String, String>>): AdUnitConfigMap {
+            val configMap = AdUnitConfigMap()
+            for (item in map.keys) {
+                map[item]?.let { configMap.put(item, it) }
+            }
+            return configMap
+        }
     }
 }

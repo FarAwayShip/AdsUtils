@@ -57,8 +57,13 @@ class AdsManager private constructor(val application: Application) {
      * Load all ad units into a Map
      */
     fun loadAdUnitsConfig(jsonString: String) {
-        Log.d(TAG, "loadAdUnitsConfig: ")
+        Log.d(TAG, "loadAdUnitsConfig from json: ")
         adUnitConfigMap = AdUnitConfigMap.fromJson(jsonString)
+    }
+
+    fun loadAdUnitsConfig(configMap: Map<String, HashMap<String, String>>) {
+        Log.d(TAG, "loadAdUnitsConfig from Map: ")
+        adUnitConfigMap - AdUnitConfigMap.fromMap(configMap)
     }
 
     fun loadAdUnitsConfigFromResource(@RawRes rawResId: Int, context: Context = application) {
@@ -162,7 +167,7 @@ class AdsManager private constructor(val application: Application) {
                         }
                     }
                     else -> {
-                        Log.e(TAG, "destroyNativeAd Failed by no valid NetworkType: " )
+                        Log.e(TAG, "destroyNativeAd Failed by no valid NetworkType: ")
                     }
                 }
             }

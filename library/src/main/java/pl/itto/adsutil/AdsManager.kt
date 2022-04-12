@@ -12,13 +12,10 @@ import android.util.Log
 import android.widget.FrameLayout
 import androidx.annotation.RawRes
 import androidx.fragment.app.FragmentActivity
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.nativead.NativeAd
+import com.google.android.gms.ads.nativead.NativeAdView
 import pl.itto.adsutil.Constants.PREF_NAME
 import pl.itto.adsutil.Constants.SHOW_ADS
-
 import pl.itto.adsutil.admob.AdmobAdsUtils
 import pl.itto.adsutil.callback.InterstitialAdCallback
 import pl.itto.adsutil.callback.NativeAdCallback
@@ -153,7 +150,26 @@ class AdsManager private constructor(val application: Application) {
         interstitialAdModel.adObject?.let {
             interstitialAdModel.show(activity, callback)
         }
+    }
 
+    /**
+     * Show the loaded native ad
+     */
+    fun showNativeAd(activity: FragmentActivity, nativeAdsModel: NativeAdModel) {
+        Log.d(TAG, "showNativeAd: ")
+        when (networkType) {
+            NetworkType.ADMOB -> {
+                nativeAdsModel.adObject?.let {
+                    val adView = activity.layoutInflater
+                        .inflate(R.layout.ads_native_home, null) as NativeAdView
+                    AdmobAdsUtils.populateNativeAdView((it as NativeAd), adView)
+                }
+
+            }
+            else -> {
+                Log.e(TAG, "Not found Network type for $networkType")
+            }
+        }
     }
 
     fun destroyNativeAd(nativeAdsModel: NativeAdModel? = null) {

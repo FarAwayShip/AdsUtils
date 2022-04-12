@@ -157,33 +157,32 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
                 adModel.adObject = p0
                 callback?.onAdLoaded(adModel)
                 if (showNow) {
-                    val content_callback = object : FullScreenContentCallback() {
-                        override fun onAdDismissedFullScreenContent() {
-                            Log.d(TAG, "Ad was dismissed.")
-                            // Don't forget to set the ad reference to null so you
-                            // don't show the ad a second time.
-                            callback?.onAdDismissed()
-                        }
-
-                        override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
-                            Log.d(TAG, "Ad failed to show.")
-                            // Don't forget to set the ad reference to null so you
-                            // don't show the ad a second time.
-                            callback?.onAdDisplayFailed()
-                        }
-
-                        override fun onAdShowedFullScreenContent() {
-                            Log.d(TAG, "Ad showed fullscreen content.")
-                            callback?.onAdDisplayed()
-                            // Actually we don't need to deal with this method, no need to process
-                        }
-
-                        override fun onAdImpression() {
-                            callback?.onAdImpression()
-                        }
-                    }
-                    p0.fullScreenContentCallback = content_callback
-                    adModel.show(activity)
+//                    val content_callback = object : FullScreenContentCallback() {
+//                        override fun onAdDismissedFullScreenContent() {
+//                            Log.d(TAG, "Ad was dismissed.")
+//                            // Don't forget to set the ad reference to null so you
+//                            // don't show the ad a second time.
+//                            callback?.onAdDismissed()
+//                        }
+//
+//                        override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+//                            Log.d(TAG, "Ad failed to show.")
+//                            // Don't forget to set the ad reference to null so you
+//                            // don't show the ad a second time.
+//                            callback?.onAdDisplayFailed()
+//                        }
+//
+//                        override fun onAdShowedFullScreenContent() {
+//                            Log.d(TAG, "Ad showed fullscreen content.")
+//                            callback?.onAdDisplayed()
+//                            // Actually we don't need to deal with this method, no need to process
+//                        }
+//
+//                        override fun onAdImpression() {
+//                            callback?.onAdImpression()
+//                        }
+//                    }
+                    adModel.show(activity, callback)
                 }
             }
 
@@ -244,6 +243,7 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
             }
 
             override fun onAdImpression() {
+                Log.d(TAG, "onAdImpression: ")
                 callback?.onAdImpression()
             }
 

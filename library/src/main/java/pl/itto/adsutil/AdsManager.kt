@@ -62,7 +62,7 @@ class AdsManager private constructor(val application: Application) {
 
     fun loadAdUnitsConfig(configMap: Map<String, HashMap<String, String>>) {
         Log.d(TAG, "loadAdUnitsConfig from Map: ")
-        adUnitConfigMap - AdUnitConfigMap.fromMap(configMap)
+        adUnitConfigMap = AdUnitConfigMap.fromMap(configMap)
     }
 
     fun loadAdUnitsConfigFromResource(@RawRes rawResId: Int, context: Context = application) {

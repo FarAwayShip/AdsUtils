@@ -9,6 +9,7 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import android.view.View
 import android.widget.FrameLayout
 import androidx.annotation.RawRes
 import androidx.fragment.app.FragmentActivity
@@ -155,19 +156,21 @@ class AdsManager private constructor(val application: Application) {
     /**
      * Show the loaded native ad
      */
-    fun showNativeAd(activity: FragmentActivity, nativeAdsModel: NativeAdModel) {
+    fun showNativeAd(activity: FragmentActivity, nativeAdsModel: NativeAdModel): View? {
         Log.d(TAG, "showNativeAd: ")
         when (networkType) {
             NetworkType.ADMOB -> {
+                val adView = activity.layoutInflater
+                    .inflate(R.layout.ads_native_home, null) as NativeAdView
                 nativeAdsModel.adObject?.let {
-                    val adView = activity.layoutInflater
-                        .inflate(R.layout.ads_native_home, null) as NativeAdView
                     AdmobAdsUtils.populateNativeAdView((it as NativeAd), adView)
                 }
+                return adView
 
             }
             else -> {
                 Log.e(TAG, "Not found Network type for $networkType")
+                return null
             }
         }
     }

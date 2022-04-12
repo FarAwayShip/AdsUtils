@@ -47,6 +47,7 @@
                         android:id="@+id/ad_headline"
                         android:layout_width="wrap_content"
                         android:maxLines="1"
+                        tool:text="Title"
                         android:layout_height="wrap_content"
                         android:textColor="@color/blueDark"
                         android:textSize="16sp"
@@ -62,6 +63,7 @@
                             android:layout_height="match_parent"
                             android:gravity="bottom"
                             tool:text="Advertiser"
+                            android:textColor="@color/grey"
                             android:textSize="14sp"
                             android:textStyle="bold" />
 
@@ -90,6 +92,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="20dp"
                     tool:text="asdsadkasda"
+                    android:textColor="@color/grey1"
                     android:textSize="12sp" />
 
                 <com.google.android.gms.ads.nativead.MediaView
@@ -116,6 +119,7 @@
                         android:paddingStart="5dp"
                         android:paddingLeft="5dp"
                         android:paddingEnd="5dp"
+                        android:textColor="@color/blueDark"
                         android:paddingRight="5dp"
                         android:clickable="false"
                         tool:text="Free"
@@ -129,6 +133,7 @@
                         android:paddingLeft="5dp"
                         android:paddingEnd="5dp"
                         android:paddingRight="5dp"
+                        android:textColor="@color/blueDark"
                         tool:text="Google play"
                         android:clickable="false"
                         android:textSize="12sp" />
@@ -138,7 +143,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/blue"
+                        android:textColor="@color/white"
                         android:gravity="center"
+                        tool:text="Install"
                         android:textSize="12sp" />
                 </LinearLayout>
             </LinearLayout>

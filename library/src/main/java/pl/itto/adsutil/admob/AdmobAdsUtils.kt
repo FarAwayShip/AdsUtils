@@ -132,6 +132,9 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
             } else {
             }
         }
+
+        const val TEST_INTER_AD_ID = "ca-app-pub-3940256099942544/1033173712"
+        const val TEST_NATIVE_AD_ID = "ca-app-pub-3940256099942544/2247696110"
     }
 
     override fun initSdk(context: Context) {

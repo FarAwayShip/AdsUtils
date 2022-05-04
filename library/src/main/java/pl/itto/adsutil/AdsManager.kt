@@ -84,7 +84,7 @@ class AdsManager private constructor(val application: Application) {
     }
 
     val isAdEnabled: Boolean
-        get() = pref.getBoolean(SHOW_ADS, true)
+        get() = pref.getBoolean(SHOW_ADS, false)
 
     fun loadInterstitialAds(
         adUnitName: String,

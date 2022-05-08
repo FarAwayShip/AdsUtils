@@ -150,6 +150,11 @@ class AdsManager private constructor(val application: Application) {
         interstitialAdModel: InterstitialAdModel,
         callback: InterstitialAdCallback? = null
     ) {
+        if (!isAdEnabled) {
+            Log.i(TAG, "Ads disabled, ignore loading ads")
+            callback?.onAdDisabled()
+            return
+        }
         interstitialAdModel.adObject?.let {
             interstitialAdModel.show(activity, callback)
         }

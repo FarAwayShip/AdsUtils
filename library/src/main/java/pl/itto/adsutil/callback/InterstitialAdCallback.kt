@@ -10,4 +10,5 @@ interface InterstitialAdCallback {
     fun onAdDisplayed()
     fun onAdImpression()
     fun onAdDisplayFailed()
+    fun onAdDisabled()
 }

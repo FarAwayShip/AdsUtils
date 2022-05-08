@@ -98,6 +98,7 @@ class AdsManager private constructor(val application: Application) {
         Log.d(TAG, "loadInterstitialAds: $adUnitName --showNow: $showNow")
         if (!isAdEnabled) {
             Log.i(TAG, "Ads disabled, ignore loading ads")
+            callback?.onAdDisabled()
             return
         }
         val adsId = adUnitConfigMap.getAdsId(adUnitName, networkType.getName())
@@ -125,6 +126,7 @@ class AdsManager private constructor(val application: Application) {
     ) {
         if (!isAdEnabled) {
             Log.i(TAG, "Ads disabled, ignore loading ads")
+            callback?.onAdDisabled()
             return
         }
         Log.d(TAG, "loadNativeAds: $adUnitName")

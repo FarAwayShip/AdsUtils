@@ -51,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         AdsManager.getInstance(application)
             .loadInterstitialAds("inter_splash", this, true, object : InterstitialAdCallback {
                 override fun onAdLoaded(ad: InterstitialAdModel) {
+                    Log.d(TAG, "onAdLoaded: ")
                     interstitialAdModel = ad
                 }
 

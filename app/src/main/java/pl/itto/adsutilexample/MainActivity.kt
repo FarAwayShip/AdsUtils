@@ -81,7 +81,6 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onAdDisabled() {
-                    TODO("Not yet implemented")
                 }
 
             })
@@ -124,7 +123,6 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     override fun onAdDisabled() {
-                        TODO("Not yet implemented")
                     }
                 })
     }
@@ -165,7 +163,6 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     override fun onAdDisabled() {
-                        TODO("Not yet implemented")
                     }
 
                 })

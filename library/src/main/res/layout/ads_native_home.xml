@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.gms.ads.nativead.NativeAdView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:tool="http://schemas.android.com/tools">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -10,7 +10,8 @@
         android:layout_gravity="center"
         android:background="#FFFFFF"
         android:minHeight="50dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingEnd="10dp">
 
         <TextView
             style="@style/AdAttribution"
@@ -46,12 +47,12 @@
                     <TextView
                         android:id="@+id/ad_headline"
                         android:layout_width="wrap_content"
-                        android:maxLines="1"
-                        tool:text="Title"
                         android:layout_height="wrap_content"
+                        android:maxLines="1"
                         android:textColor="@color/blueDark"
                         android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tool:text="Title" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -62,10 +63,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:gravity="bottom"
-                            tool:text="Advertiser"
                             android:textColor="@color/grey"
                             android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            tool:text="Advertiser" />
 
                         <RatingBar
                             android:id="@+id/ad_stars"
@@ -91,18 +92,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="20dp"
-                    tool:text="asdsadkasda"
                     android:textColor="@color/grey1"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    tool:text="asdsadkasda" />
 
                 <com.google.android.gms.ads.nativead.MediaView
                     android:id="@+id/ad_media"
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
-                    android:minWidth="125dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginHorizontal="25dp"
-                    android:layout_marginTop="5dp" />
+                    android:layout_marginTop="5dp"
+                    android:minWidth="125dp" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -116,37 +117,37 @@
                         android:id="@+id/ad_price"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:clickable="false"
                         android:paddingStart="5dp"
                         android:paddingLeft="5dp"
                         android:paddingEnd="5dp"
-                        android:textColor="@color/blueDark"
                         android:paddingRight="5dp"
-                        android:clickable="false"
-                        tool:text="Free"
-                        android:textSize="12sp" />
+                        android:textColor="@color/blueDark"
+                        android:textSize="12sp"
+                        tool:text="Free" />
 
                     <TextView
                         android:id="@+id/ad_store"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:clickable="false"
                         android:paddingStart="5dp"
                         android:paddingLeft="5dp"
                         android:paddingEnd="5dp"
                         android:paddingRight="5dp"
                         android:textColor="@color/blueDark"
-                        tool:text="Google play"
-                        android:clickable="false"
-                        android:textSize="12sp" />
+                        android:textSize="12sp"
+                        tool:text="Google play" />
 
                     <Button
                         android:id="@+id/ad_call_to_action"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/blue"
-                        android:textColor="@color/white"
                         android:gravity="center"
-                        tool:text="Install"
-                        android:textSize="12sp" />
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        tool:text="Install" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

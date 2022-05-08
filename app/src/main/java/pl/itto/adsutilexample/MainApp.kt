@@ -11,6 +11,7 @@ class MainApp : Application() {
             it.initAdsSdk(this)
             it.loadAdUnitsConfigFromResource(R.raw.ad_units)
             it.networkType = NetworkType.ADMOB
+            it.enableShowAds(true)
         }
     }
 }

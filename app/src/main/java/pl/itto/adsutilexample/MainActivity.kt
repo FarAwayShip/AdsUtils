@@ -80,6 +80,10 @@ class MainActivity : AppCompatActivity() {
                     Log.d(TAG, "onAdDisplayFailed: ")
                 }
 
+                override fun onAdDisabled() {
+                    TODO("Not yet implemented")
+                }
+
             })
     }
 
@@ -118,6 +122,10 @@ class MainActivity : AppCompatActivity() {
 
                     override fun onAdClosed() {
                     }
+
+                    override fun onAdDisabled() {
+                        TODO("Not yet implemented")
+                    }
                 })
     }
 
@@ -154,6 +162,10 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     override fun onAdClosed() {
+                    }
+
+                    override fun onAdDisabled() {
+                        TODO("Not yet implemented")
                     }
 
                 })

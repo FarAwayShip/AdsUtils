@@ -212,6 +212,28 @@ class AdsManager private constructor(val application: Application) {
         }
     }
 
+    /**
+     * Show the loaded native ad
+     */
+    fun showNativeSmallAd(activity: FragmentActivity, nativeAdsModel: NativeAdModel): View? {
+        Log.d(TAG, "showNativeAd: ")
+        when (networkType) {
+            NetworkType.ADMOB -> {
+                val adView = activity.layoutInflater
+                    .inflate(R.layout.ads_native_banner, null) as NativeAdView
+                nativeAdsModel.adObject?.let {
+                    AdmobAdsUtils.populateNativeSmallAdView((it as NativeAd), adView)
+                }
+                return adView
+
+            }
+            else -> {
+                Log.e(TAG, "Not found Network type for $networkType")
+                return null
+            }
+        }
+    }
+
     fun destroyNativeAd(nativeAdsModel: NativeAdModel? = null) {
         Log.d(TAG, "destroyNativeAd: $nativeAdsModel")
         try {

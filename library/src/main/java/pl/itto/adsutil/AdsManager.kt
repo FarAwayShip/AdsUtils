@@ -194,7 +194,11 @@ class AdsManager private constructor(val application: Application) {
     /**
      * Show the loaded native ad
      */
-    fun showNativeAd(activity: FragmentActivity, nativeAdsModel: NativeAdModel): View? {
+    fun showNativeAd(
+        activity: FragmentActivity,
+        nativeAdsModel: NativeAdModel,
+        adContainer: FrameLayout?
+    ): View? {
         Log.d(TAG, "showNativeAd: ")
         when (networkType) {
             NetworkType.ADMOB -> {
@@ -202,6 +206,11 @@ class AdsManager private constructor(val application: Application) {
                     .inflate(R.layout.ads_native_home, null) as NativeAdView
                 nativeAdsModel.adObject?.let {
                     AdmobAdsUtils.populateNativeAdView((it as NativeAd), adView)
+                }
+                adContainer?.let {
+                    it.removeAllViews()
+                    it.addView(adView)
+                    it.isVisible = true
                 }
                 return adView
 

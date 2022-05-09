@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import androidx.annotation.RawRes
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdView
@@ -215,7 +216,11 @@ class AdsManager private constructor(val application: Application) {
     /**
      * Show the loaded native ad
      */
-    fun showNativeSmallAd(activity: FragmentActivity, nativeAdsModel: NativeAdModel): View? {
+    fun showNativeSmallAd(
+        activity: FragmentActivity,
+        nativeAdsModel: NativeAdModel,
+        adContainer: FrameLayout?
+    ): View? {
         Log.d(TAG, "showNativeAd: ")
         when (networkType) {
             NetworkType.ADMOB -> {
@@ -223,6 +228,11 @@ class AdsManager private constructor(val application: Application) {
                     .inflate(R.layout.ads_native_banner, null) as NativeAdView
                 nativeAdsModel.adObject?.let {
                     AdmobAdsUtils.populateNativeSmallAdView((it as NativeAd), adView)
+                }
+                adContainer?.let {
+                    it.removeAllViews()
+                    it.addView(adView)
+                    it.isVisible = true
                 }
                 return adView
 

@@ -142,6 +142,36 @@ class AdsManager private constructor(val application: Application) {
         }
     }
 
+
+    /**
+     * Load Native Banner ads,
+     * We will pass a adUnitName, from here adsId will be parse by AdUnitName + AdNetworkType
+     */
+    fun loadNativeSmallAds(
+        adUnitName: String,
+        adsContainer: FrameLayout,
+        activity: Activity,
+        existAdModel: NativeAdModel? = null,
+        callback: NativeAdCallback? = null
+    ) {
+        if (!isAdEnabled) {
+            Log.i(TAG, "Ads disabled, ignore loading ads")
+            callback?.onAdDisabled()
+            return
+        }
+        Log.d(TAG, "loadNativeSmallAds: $adUnitName")
+        val adsId = adUnitConfigMap.getAdsId(adUnitName, networkType.getName())
+        when (networkType) {
+            NetworkType.ADMOB -> {
+                AdmobAdsUtils.getInstance(application)
+                    .loadNativeSmallAds(adsId, adsContainer, activity, existAdModel, callback)
+            }
+            else -> {
+                Log.e(TAG, "Not found Network type for $networkType")
+            }
+        }
+    }
+
     /**
      * Show the loaded interstitial ads
      */

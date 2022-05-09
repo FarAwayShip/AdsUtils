@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity() {
 //
 //        })
         AdsManager.getInstance(application)
-            .loadNativeAds(
+            .loadNativeSmallAds(
                 "native_home",
                 mBinding.adsNativeBannerContainer,
                 this,

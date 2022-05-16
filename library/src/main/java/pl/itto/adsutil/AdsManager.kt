@@ -97,6 +97,12 @@ class AdsManager private constructor(val application: Application) {
          * Load interstitial ad
          */
         Log.d(TAG, "loadInterstitialAds: $adUnitName --showNow: $showNow")
+        if (!this::adUnitConfigMap.isInitialized) {
+            val msg = "Ads Config map not initialized, call failed"
+            Log.e(TAG, msg)
+            callback?.onAdLoadFailed(msg)
+            return
+        }
         if (!isAdEnabled) {
             Log.i(TAG, "Ads disabled, ignore loading ads")
             callback?.onAdDisabled()
@@ -125,6 +131,12 @@ class AdsManager private constructor(val application: Application) {
         existAdModel: NativeAdModel? = null,
         callback: NativeAdCallback? = null
     ) {
+        if (!this::adUnitConfigMap.isInitialized) {
+            val msg = "Ads Config map not initialized, call failed"
+            Log.e(TAG, msg)
+            callback?.onAdLoadFailed(msg)
+            return
+        }
         if (!isAdEnabled) {
             Log.i(TAG, "Ads disabled, ignore loading ads")
             callback?.onAdDisabled()
@@ -155,6 +167,12 @@ class AdsManager private constructor(val application: Application) {
         existAdModel: NativeAdModel? = null,
         callback: NativeAdCallback? = null
     ) {
+        if (!this::adUnitConfigMap.isInitialized) {
+            val msg = "Ads Config map not initialized, call failed"
+            Log.e(TAG, msg)
+            callback?.onAdLoadFailed(msg)
+            return
+        }
         if (!isAdEnabled) {
             Log.i(TAG, "Ads disabled, ignore loading ads")
             callback?.onAdDisabled()

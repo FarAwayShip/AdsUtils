@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import androidx.annotation.RawRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.ads.nativead.NativeAd
@@ -95,7 +96,7 @@ class AdsManager private constructor(val application: Application) {
     /**
      * Show open app ads
      */
-    fun showOpenApp(adUnitName: String, callback: OpenAppCallback) {
+    fun showOpenApp(adUnitName: String, activity: AppCompatActivity, callback: OpenAppCallback) {
         Log.d(TAG, "showOpenApp: $adUnitConfigMap")
         Log.d(TAG, "ad unit name: $adUnitName")
         if (!this::adUnitConfigMap.isInitialized) {
@@ -120,7 +121,7 @@ class AdsManager private constructor(val application: Application) {
             when (networkType) {
                 NetworkType.ADMOB -> {
                     AdmobAdsUtils.getInstance(application)
-                        .showAppOpenAds(adsId, callback)
+                        .showAppOpenAds(adsId, activity, callback)
                 }
                 else -> {
                     Log.e(TAG, "Not found Network type for $networkType")

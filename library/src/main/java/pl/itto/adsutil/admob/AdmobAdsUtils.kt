@@ -6,6 +6,7 @@ import android.content.Context
 import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
@@ -204,9 +205,9 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
         appOpenManager = AppOpenManager(application)
     }
 
-    fun showAppOpenAds(adsId: String,callback: OpenAppCallback) {
+    fun showAppOpenAds(adsId: String, activity: AppCompatActivity, callback: OpenAppCallback) {
         Log.d(TAG, "showAppOpenAds: ")
-        appOpenManager?.showAdIfAvailable(adsId, callback)
+        appOpenManager?.showAdIfAvailable(activity, adsId, callback)
     }
 
 

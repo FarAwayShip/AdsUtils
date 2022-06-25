@@ -247,7 +247,7 @@ class MainActivity : AppCompatActivity() {
 
     fun appOpen(view: View) {
         Log.d(TAG, "test: ")
-        AdsManager.getInstance(application).showOpenApp("open_app", object : OpenAppCallback {
+        AdsManager.getInstance(application).showOpenApp("open_app", this, object : OpenAppCallback {
             override fun onAdDismissed() {
                 Log.d(TAG, "onAdDismissed: ")
             }

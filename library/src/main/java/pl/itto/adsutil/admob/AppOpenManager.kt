@@ -4,6 +4,8 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
@@ -31,13 +33,17 @@ class AppOpenManager(private val application: Application) :
     private var loadTime: Long = 0L
 
     init {
-        application.registerActivityLifecycleCallbacks(this)
+//        application.registerActivityLifecycleCallbacks(this)
 //        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
     }
 
     /** Request an ad
      * Show after loading if needed */
-    fun fetchAd(adUnitId: String, callback: OpenAppCallback? = null) {
+    fun fetchAd(
+        adUnitId: String,
+        activity: AppCompatActivity? = null,
+        callback: OpenAppCallback? = null
+    ) {
         // Have unused ad, no need to fetch another.
         if (isAdAvailable()) {
             return;
@@ -53,8 +59,8 @@ class AppOpenManager(private val application: Application) :
                 this@AppOpenManager.loadTime = Date().time
 
                 // Only show immediately if callback is not null
-                callback?.let {
-                    showAdIfAvailable(adUnitId, it)
+                if (activity != null && callback != null) {
+                    showAdIfAvailable(activity, adUnitId, callback)
                 }
             }
 
@@ -121,13 +127,19 @@ class AppOpenManager(private val application: Application) :
     override fun onActivityDestroyed(activity: Activity) {
     }
 
-    /** Shows the ad if one isn't already showing.  */
-    fun showAdIfAvailable(adUnitId: String, callback: OpenAppCallback?) {
+    /** Shows the ad if one isn't already showing.
+     * Only show if activity is current resumed
+     * */
+    fun showAdIfAvailable(
+        activity: AppCompatActivity,
+        adUnitId: String,
+        callback: OpenAppCallback?
+    ) {
         Log.d(TAG, "showAdIfAvailable: ")
         // Only show ad if there is not already an app open ad currently showing
         // and an ad is available.
         if (!isShowingAd && isAdAvailable()) {
-            currentActivity?.let {
+            if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
                 Log.d(TAG, "Will show ad.")
                 val fullScreenContentCallback: FullScreenContentCallback =
                     object : FullScreenContentCallback() {
@@ -150,11 +162,11 @@ class AppOpenManager(private val application: Application) :
                         }
                     }
                 appOpenAd!!.fullScreenContentCallback = fullScreenContentCallback
-                appOpenAd!!.show(it)
+                appOpenAd!!.show(activity)
             }
         } else {
             Log.d(TAG, "Can not show ad.")
-            fetchAd(adUnitId, callback)
+            fetchAd(adUnitId, activity, callback)
         }
     }
 

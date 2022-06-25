@@ -21,6 +21,7 @@ import pl.itto.adsutil.Constants.SHOW_ADS
 import pl.itto.adsutil.admob.AdmobAdsUtils
 import pl.itto.adsutil.callback.InterstitialAdCallback
 import pl.itto.adsutil.callback.NativeAdCallback
+import pl.itto.adsutil.callback.OpenAppCallback
 import pl.itto.adsutil.model.AdUnitConfigMap
 import pl.itto.adsutil.model.InterstitialAdModel
 import pl.itto.adsutil.model.NativeAdModel
@@ -44,10 +45,13 @@ class AdsManager private constructor(val application: Application) {
     val isNetworkDefined: Boolean = networkType != NetworkType.UN_DEFINED
 
     private lateinit var adUnitConfigMap: AdUnitConfigMap
-    fun initAdsSdk(context: Context) {
+    fun initAdsSdk(context: Context, initAppOpen: Boolean = false) {
         try {
             Log.d(TAG, "initAdsSdk: ")
             AdmobAdsUtils.getInstance(application).initSdk(context)
+            if (initAppOpen) {
+                AdmobAdsUtils.getInstance(application).initAppOpen(application)
+            }
         } catch (e: Exception) {
             Log.e(TAG, "initAdsSdk Failed", e)
         }
@@ -87,6 +91,48 @@ class AdsManager private constructor(val application: Application) {
     val isAdEnabled: Boolean
         get() = pref.getBoolean(SHOW_ADS, false)
 
+
+    /**
+     * Show open app ads
+     */
+    fun showOpenApp(adUnitName: String, callback: OpenAppCallback) {
+        Log.d(TAG, "showOpenApp: $adUnitConfigMap")
+        Log.d(TAG, "ad unit name: $adUnitName")
+        if (!this::adUnitConfigMap.isInitialized) {
+            val msg = "Ads Config map not initialized, call failed"
+            Log.e(TAG, msg)
+            callback.onAdLoadFailed("adUnitConfigMap not initialized")
+            return
+        }
+
+        if (!isAdEnabled) {
+            Log.i(TAG, "Ads disabled, ignore loading ads")
+            callback.onAdDisabled()
+            return
+        }
+
+        try {
+            val adsId = adUnitConfigMap.getAdsId(adUnitName, networkType.getName())
+            if (adsId.isEmpty()) {
+                callback.onAdLoadFailed("Ad unit id empty")
+                return
+            }
+            when (networkType) {
+                NetworkType.ADMOB -> {
+                    AdmobAdsUtils.getInstance(application)
+                        .showAppOpenAds(adsId, callback)
+                }
+                else -> {
+                    Log.e(TAG, "Not found Network type for $networkType")
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.e(TAG, "initAdsSdk Failed", e)
+        }
+    }
+
+
     fun loadInterstitialAds(
         adUnitName: String,
         activity: FragmentActivity,
@@ -109,6 +155,11 @@ class AdsManager private constructor(val application: Application) {
             return
         }
         val adsId = adUnitConfigMap.getAdsId(adUnitName, networkType.getName())
+        if (adsId.isEmpty()) {
+            callback?.onAdLoadFailed("Ad unit id empty")
+            return
+        }
+
         when (networkType) {
             NetworkType.ADMOB -> {
                 AdmobAdsUtils.getInstance(application)
@@ -144,6 +195,10 @@ class AdsManager private constructor(val application: Application) {
         }
         Log.d(TAG, "loadNativeAds: $adUnitName")
         val adsId = adUnitConfigMap.getAdsId(adUnitName, networkType.getName())
+        if (adsId.isEmpty()) {
+            callback?.onAdLoadFailed("Ad unit id empty")
+            return
+        }
         when (networkType) {
             NetworkType.ADMOB -> {
                 AdmobAdsUtils.getInstance(application)
@@ -180,6 +235,10 @@ class AdsManager private constructor(val application: Application) {
         }
         Log.d(TAG, "loadNativeSmallAds: $adUnitName")
         val adsId = adUnitConfigMap.getAdsId(adUnitName, networkType.getName())
+        if (adsId.isEmpty()) {
+            callback?.onAdLoadFailed("Ad unit id empty")
+            return
+        }
         when (networkType) {
             NetworkType.ADMOB -> {
                 AdmobAdsUtils.getInstance(application)

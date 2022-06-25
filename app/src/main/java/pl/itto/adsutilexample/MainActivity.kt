@@ -11,6 +11,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import pl.itto.adsutil.AdsManager
 import pl.itto.adsutil.callback.InterstitialAdCallback
 import pl.itto.adsutil.callback.NativeAdCallback
+import pl.itto.adsutil.callback.OpenAppCallback
 import pl.itto.adsutil.model.AdUnitConfigMap
 import pl.itto.adsutil.model.InterstitialAdModel
 import pl.itto.adsutil.model.NativeAdModel
@@ -37,53 +38,22 @@ class MainActivity : AppCompatActivity() {
         setContentView(mBinding.root)
 
 
-        val x = "{\n" +
-                "    \"inter_splash\": {\n" +
-                "        \"admob\": \"asdagsdasd\",\n" +
-                "        \"applovin\": \"asdasdasd\"\n" +
-                "    },\n" +
-                "    \"native_home\": {\n" +
-                "        \"admob\": \"asdagsdasd\",\n" +
-                "        \"applovin\": \"asdasdasd\"\n" +
-                "    }\n" +
-                "}"
-        AdUnitConfigMap.fromJson(x)
-        AdsManager.getInstance(application)
-            .loadInterstitialAds("inter_splash", this, true, object : InterstitialAdCallback {
-                override fun onAdLoaded(ad: InterstitialAdModel) {
-                    Log.d(TAG, "onAdLoaded: ")
-                    interstitialAdModel = ad
-                }
+//        val x = "{\n" +
+//                "    \"inter_splash\": {\n" +
+//                "        \"admob\": \"asdagsdasd\",\n" +
+//                "        \"applovin\": \"asdasdasd\"\n" +
+//                "    },\n" +
+//                "    \"native_home\": {\n" +
+//                "        \"admob\": \"asdagsdasd\",\n" +
+//                "        \"applovin\": \"asdasdasd\"\n" +
+//                "    },\n" +
+//                "    \"open_app\": {\n" +
+//                "        \"admob\": \"ca-app-pub-3940256099942544/3419835294\",\n" +
+//                "        \"applovin\": \"asdasdasd\"\n" +
+//                "    }\n" +
+//                "}"
+//        AdUnitConfigMap.fromJson(x)
 
-                override fun onAdLoadFailed(message: String?) {
-                    Log.d(TAG, "onAdLoadFailed: ")
-
-                }
-
-                override fun onAdClicked() {
-                    Log.d(TAG, "onAdClicked: ")
-                }
-
-                override fun onAdDismissed() {
-                    Log.d(TAG, "onAdHidden: ")
-                }
-
-                override fun onAdDisplayed() {
-                    Log.d(TAG, "onAdDisplayed: ")
-                }
-
-                override fun onAdImpression() {
-                    Log.d(TAG, "onAdImpression: ")
-                }
-
-                override fun onAdDisplayFailed() {
-                    Log.d(TAG, "onAdDisplayFailed: ")
-                }
-
-                override fun onAdDisabled() {
-                }
-
-            })
     }
 
 
@@ -197,6 +167,43 @@ class MainActivity : AppCompatActivity() {
 //        loadInterstitialAppLovin()
         if (interstitialAdModel != null) {
             interstitialAdModel?.show(this)
+        } else {
+            AdsManager.getInstance(application)
+                .loadInterstitialAds("inter_splash", this, true, object : InterstitialAdCallback {
+                    override fun onAdLoaded(ad: InterstitialAdModel) {
+                        Log.d(TAG, "onAdLoaded: ")
+                        interstitialAdModel = ad
+                    }
+
+                    override fun onAdLoadFailed(message: String?) {
+                        Log.d(TAG, "onAdLoadFailed: ")
+
+                    }
+
+                    override fun onAdClicked() {
+                        Log.d(TAG, "onAdClicked: ")
+                    }
+
+                    override fun onAdDismissed() {
+                        Log.d(TAG, "onAdHidden: ")
+                    }
+
+                    override fun onAdDisplayed() {
+                        Log.d(TAG, "onAdDisplayed: ")
+                    }
+
+                    override fun onAdImpression() {
+                        Log.d(TAG, "onAdImpression: ")
+                    }
+
+                    override fun onAdDisplayFailed() {
+                        Log.d(TAG, "onAdDisplayFailed: ")
+                    }
+
+                    override fun onAdDisabled() {
+                    }
+
+                })
         }
     }
 
@@ -236,5 +243,31 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         AdsManager.getInstance(application).destroyNativeAd(nativeAdBannerModel)
         AdsManager.getInstance(application).destroyNativeAd(nativeAdMediumModel)
+    }
+
+    fun appOpen(view: View) {
+        Log.d(TAG, "test: ")
+        AdsManager.getInstance(application).showOpenApp("open_app", object : OpenAppCallback {
+            override fun onAdDismissed() {
+                Log.d(TAG, "onAdDismissed: ")
+            }
+
+            override fun onAdDisplayed() {
+                Log.d(TAG, "onAdDisplayed: ")
+            }
+
+            override fun onAdDisplayFailed() {
+                Log.d(TAG, "onAdDisplayFailed: ")
+            }
+
+            override fun onAdLoadFailed(msg: String?) {
+                Log.d(TAG, "onAdLoadFailed: $msg")
+            }
+
+            override fun onAdDisabled() {
+                Log.d(TAG, "onAdDisabled: ")
+            }
+
+        })
     }
 }

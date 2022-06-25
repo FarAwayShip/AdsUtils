@@ -10,28 +10,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AdsUtilExample">
+        <activity
+            android:name=".MainActivity2"
+            android:exported="false" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <!--        <meta-data android:name="com.huawei.hms.client.channel.androidMarket" android:value="false" />-->
+        </activity> <!-- <meta-data android:name="com.huawei.hms.client.channel.androidMarket" android:value="false" /> -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="@string/ads_test_app_id" />
         <meta-data
             android:name="applovin.sdk.key"
             android:value="FMhf40QHa7wPH1qru3RDsNwBu4_V30KQT7lxJTJ5R1FONTU7R0baRId5cQtnA0g_OgibxZ8E25Xv4y5vi_3cJP" />
-
         <meta-data
             android:name="applovin.sdk.verbose_logging"
             android:value="true" />
     </application>
-    <!--    <queries>-->
-    <!--        <intent>-->
-    <!--            <action android:name="com.huawei.hms.core.aidlservice" />-->
-    <!--        </intent>-->
-    <!--    </queries>-->
-</manifest>
 
+</manifest>

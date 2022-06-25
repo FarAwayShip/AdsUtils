@@ -17,6 +17,7 @@ import pl.itto.adsutil.BaseAdsUtils
 import pl.itto.adsutil.R
 import pl.itto.adsutil.callback.InterstitialAdCallback
 import pl.itto.adsutil.callback.NativeAdCallback
+import pl.itto.adsutil.callback.OpenAppCallback
 import pl.itto.adsutil.model.InterstitialAdModel
 import pl.itto.adsutil.model.NativeAdModel
 import pl.itto.adsutil.model.NetworkType
@@ -26,6 +27,7 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
     companion object {
         const val TAG = "AdmobAdsUtils"
         private var _instance: AdmobAdsUtils? = null
+        private var appOpenManager: AppOpenManager? = null
         fun getInstance(application: Application): AdmobAdsUtils {
             if (_instance == null) {
                 _instance = AdmobAdsUtils(application)
@@ -186,11 +188,27 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
 
         const val TEST_INTER_AD_ID = "ca-app-pub-3940256099942544/1033173712"
         const val TEST_NATIVE_AD_ID = "ca-app-pub-3940256099942544/2247696110"
+        const val TEST_OPEN_APP_AD_ID = "ca-app-pub-3940256099942544/3419835294"
     }
 
     override fun initSdk(context: Context) {
-        MobileAds.initialize(context)
+        Log.d(TAG, "initSdk: ")
+        MobileAds.initialize(
+            context
+        ) {
+        }
     }
+
+    fun initAppOpen(application: Application) {
+        Log.d(TAG, "initAppOpen: ")
+        appOpenManager = AppOpenManager(application)
+    }
+
+    fun showAppOpenAds(adsId: String,callback: OpenAppCallback) {
+        Log.d(TAG, "showAppOpenAds: ")
+        appOpenManager?.showAdIfAvailable(adsId, callback)
+    }
+
 
     /***
      * Load Interstitial Ad

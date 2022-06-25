@@ -10,6 +10,9 @@
   "native_setting": {
     "admob": "ca-app-pub-3940256099942544/2247696110",
     "applovin": "a4d1b1f4f307a998"
-
+  },
+  "open_app": {
+    "admob": "ca-app-pub-3940256099942544/3419835294",
+    "applovin": "a4d1b1f4f307a998"
   }
 }

@@ -37,13 +37,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_native" />
 
+    <Button
+        android:id="@+id/btn_app_open"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:onClick="appOpen"
+        android:text="App Open"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_inter" />
     <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_inter"
+        app:layout_constraintTop_toBottomOf="@id/btn_app_open"
         app:layout_constraintVertical_bias="1">
 
         <LinearLayout

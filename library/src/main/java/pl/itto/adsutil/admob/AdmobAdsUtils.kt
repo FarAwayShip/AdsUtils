@@ -268,33 +268,13 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
     fun loadNativeAds(
         adId: String, adsContainer: FrameLayout, activity: Activity,
         existAdModel: NativeAdModel? = null,
-        callback: NativeAdCallback? = null
+        callback: NativeAdCallback? = null,
+        altAdId: String? = null
     ) {
         Log.d(TAG, "loadNativeAds: ")
-        val builder = AdLoader.Builder(activity, adId)
+        var builder = AdLoader.Builder(activity, adId)
             .forNativeAd { nativeAd ->
-                Log.d(TAG, "loadNativeAds: ")
-                val nativeAdModel = NativeAdModel(NetworkType.ADMOB)
-                nativeAdModel.adObject
-                callback?.onAdLoaded(nativeAdModel)
-
-                if (activity.isDestroyed) {
-                    nativeAd.destroy()
-                    return@forNativeAd
-                }
-                // Assumes that your ad layout is in a file call native_ad_layout.xml
-                // in the res/layout folder
-                val layoutInflater = activity.layoutInflater
-                val adView = layoutInflater
-                    .inflate(R.layout.ads_native_home, null) as NativeAdView
-                // This method sets the text, images and the native ad, etc into the ad
-                // view.
-                populateNativeAdView(nativeAd, adView)
-                // Assumes you have a placeholder FrameLayout in your View layout
-                // (with id ad_frame) where the ad is to be placed.
-                adsContainer.visibility = View.VISIBLE
-                adsContainer.removeAllViews()
-                adsContainer.addView(adView)
+                onNativeAdLoaded(callback, activity, nativeAd, adsContainer)
             }
         val nativeOption =
             NativeAdOptions.Builder().setAdChoicesPlacement(NativeAdOptions.ADCHOICES_TOP_RIGHT)
@@ -302,7 +282,6 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
         builder.withNativeAdOptions(
             nativeOption
         )
-
 
         val adLoader = builder.withAdListener(object : AdListener() {
             override fun onAdClosed() {
@@ -325,7 +304,12 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
                     """
            domain: ${loadAdError.domain}, code: ${loadAdError.code}, message: ${loadAdError.message}
           """"
-                Log.e(TAG, "onAdFailedToLoad: $error")
+                Log.e(TAG, "on Native Ad failed to load: $error")
+                if (!altAdId.isNullOrEmpty()) {
+                    Log.d(TAG, "Alt ad id defined, so reload with alt ad id")
+                    loadNativeAds(altAdId, adsContainer, activity, existAdModel, callback)
+                    return
+                }
                 callback?.onAdLoadFailed(error)
             }
         }).build()
@@ -334,36 +318,49 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
 
     }
 
+    /**
+     * Called after a native ad is loaded successfully
+     */
+    private fun onNativeAdLoaded(
+        callback: NativeAdCallback?,
+        activity: Activity,
+        nativeAd: NativeAd,
+        adsContainer: FrameLayout
+    ) {
+        Log.d(TAG, "Native ad loaded")
+        val nativeAdModel = NativeAdModel(NetworkType.ADMOB)
+        nativeAdModel.adObject
+        callback?.onAdLoaded(nativeAdModel)
+
+        if (activity.isDestroyed) {
+            nativeAd.destroy()
+            return
+        }
+        // Assumes that your ad layout is in a file call native_ad_layout.xml
+        // in the res/layout folder
+        val layoutInflater = activity.layoutInflater
+        val adView = layoutInflater
+            .inflate(R.layout.ads_native_home, null) as NativeAdView
+        // This method sets the text, images and the native ad, etc into the ad
+        // view.
+        populateNativeAdView(nativeAd, adView)
+        // Assumes you have a placeholder FrameLayout in your View layout
+        // (with id ad_frame) where the ad is to be placed.
+        adsContainer.visibility = View.VISIBLE
+        adsContainer.removeAllViews()
+        adsContainer.addView(adView)
+    }
+
     fun loadNativeSmallAds(
         adId: String, adsContainer: FrameLayout, activity: Activity,
         existAdModel: NativeAdModel? = null,
-        callback: NativeAdCallback? = null
+        callback: NativeAdCallback? = null,
+        altAdId: String?=null
     ) {
         Log.d(TAG, "loadNativeAds: ")
         val builder = AdLoader.Builder(activity, adId)
             .forNativeAd { nativeAd ->
-                Log.d(TAG, "loadNativeAds: ")
-                val nativeAdModel = NativeAdModel(NetworkType.ADMOB)
-                nativeAdModel.adObject
-                callback?.onAdLoaded(nativeAdModel)
-
-                if (activity.isDestroyed) {
-                    nativeAd.destroy()
-                    return@forNativeAd
-                }
-                // Assumes that your ad layout is in a file call native_ad_layout.xml
-                // in the res/layout folder
-                val layoutInflater = activity.layoutInflater
-                val adView = layoutInflater
-                    .inflate(R.layout.ads_native_banner, null) as NativeAdView
-                // This method sets the text, images and the native ad, etc into the ad
-                // view.
-                populateNativeSmallAdView(nativeAd, adView)
-                // Assumes you have a placeholder FrameLayout in your View layout
-                // (with id ad_frame) where the ad is to be placed.
-                adsContainer.visibility = View.VISIBLE
-                adsContainer.removeAllViews()
-                adsContainer.addView(adView)
+                onNativeSmallAdLoaded(callback, activity, nativeAd, adsContainer)
             }
         val nativeOption =
             NativeAdOptions.Builder().setAdChoicesPlacement(NativeAdOptions.ADCHOICES_TOP_RIGHT)
@@ -395,11 +392,46 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
            domain: ${loadAdError.domain}, code: ${loadAdError.code}, message: ${loadAdError.message}
           """"
                 Log.e(TAG, "onAdFailedToLoad: $error")
+                if (!altAdId.isNullOrEmpty()) {
+                    Log.d(TAG, "Alt adId defined, so reload with alt adId")
+                    loadNativeSmallAds(altAdId, adsContainer, activity, existAdModel, callback)
+                    return
+                }
                 callback?.onAdLoadFailed(error)
             }
         }).build()
 
         adLoader.loadAd(AdRequest.Builder().build())
 
+    }
+
+    private fun onNativeSmallAdLoaded(
+        callback: NativeAdCallback?,
+        activity: Activity,
+        nativeAd: NativeAd,
+        adsContainer: FrameLayout
+    ) {
+        Log.d(TAG, "Native small ad loaded")
+        val nativeAdModel = NativeAdModel(NetworkType.ADMOB)
+        nativeAdModel.adObject
+        callback?.onAdLoaded(nativeAdModel)
+
+        if (activity.isDestroyed) {
+            nativeAd.destroy()
+            return
+        }
+        // Assumes that your ad layout is in a file call native_ad_layout.xml
+        // in the res/layout folder
+        val layoutInflater = activity.layoutInflater
+        val adView = layoutInflater
+            .inflate(R.layout.ads_native_banner, null) as NativeAdView
+        // This method sets the text, images and the native ad, etc into the ad
+        // view.
+        populateNativeSmallAdView(nativeAd, adView)
+        // Assumes you have a placeholder FrameLayout in your View layout
+        // (with id ad_frame) where the ad is to be placed.
+        adsContainer.visibility = View.VISIBLE
+        adsContainer.removeAllViews()
+        adsContainer.addView(adView)
     }
 }

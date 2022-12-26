@@ -181,7 +181,8 @@ class AdsManager private constructor(val application: Application) {
         adsContainer: FrameLayout,
         activity: Activity,
         existAdModel: NativeAdModel? = null,
-        callback: NativeAdCallback? = null
+        callback: NativeAdCallback? = null,
+        adUnitAltName: String? = null
     ) {
         if (!this::adUnitConfigMap.isInitialized) {
             val msg = "Ads Config map not initialized, call failed"
@@ -200,10 +201,11 @@ class AdsManager private constructor(val application: Application) {
             callback?.onAdLoadFailed("Ad unit id empty")
             return
         }
+        val adsIdAlt = adUnitAltName?.let { adUnitConfigMap.getAdsId(it, networkType.getName()) }
         when (networkType) {
             NetworkType.ADMOB -> {
                 AdmobAdsUtils.getInstance(application)
-                    .loadNativeAds(adsId, adsContainer, activity, existAdModel, callback)
+                    .loadNativeAds(adsId, adsContainer, activity, existAdModel, callback, adsIdAlt)
             }
             else -> {
                 Log.e(TAG, "Not found Network type for $networkType")
@@ -221,7 +223,8 @@ class AdsManager private constructor(val application: Application) {
         adsContainer: FrameLayout,
         activity: Activity,
         existAdModel: NativeAdModel? = null,
-        callback: NativeAdCallback? = null
+        callback: NativeAdCallback? = null,
+        adUnitAltName: String? = null
     ) {
         if (!this::adUnitConfigMap.isInitialized) {
             val msg = "Ads Config map not initialized, call failed"
@@ -240,10 +243,11 @@ class AdsManager private constructor(val application: Application) {
             callback?.onAdLoadFailed("Ad unit id empty")
             return
         }
+        val adsIdAlt = adUnitAltName?.let { adUnitConfigMap.getAdsId(it, networkType.getName()) }
         when (networkType) {
             NetworkType.ADMOB -> {
                 AdmobAdsUtils.getInstance(application)
-                    .loadNativeSmallAds(adsId, adsContainer, activity, existAdModel, callback)
+                    .loadNativeSmallAds(adsId, adsContainer, activity, existAdModel, callback, adsIdAlt)
             }
             else -> {
                 Log.e(TAG, "Not found Network type for $networkType")

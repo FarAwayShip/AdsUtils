@@ -135,7 +135,8 @@ class MainActivity : AppCompatActivity() {
                     override fun onAdDisabled() {
                     }
 
-                })
+                }, "native_home_alt"
+            )
     }
 
     fun interstitial(view: View) {

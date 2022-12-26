@@ -152,8 +152,8 @@ class AppOpenManager(private val application: Application) :
                             fetchAd(adUnitId)
                         }
 
-                        override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
-                            callback?.onAdLoadFailed(adError?.message ?: "Ad failed to show")
+                        override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                            callback?.onAdLoadFailed(adError.message ?: "Ad failed to show")
                         }
 
                         override fun onAdShowedFullScreenContent() {

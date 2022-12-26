@@ -222,7 +222,7 @@ class MainActivity : AppCompatActivity() {
             mInterstitialAd = null
         }
 
-        override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+        override fun onAdFailedToShowFullScreenContent(adError: AdError) {
             Log.d(TAG, "Ad failed to show.")
             Toast.makeText(this@MainActivity, "Ad failed to show", Toast.LENGTH_SHORT).show()
             // Don't forget to set the ad reference to null so you

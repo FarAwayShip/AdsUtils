@@ -205,6 +205,16 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
         appOpenManager = AppOpenManager(application)
     }
 
+    fun loadAppOpenAds(
+        adsId: String,
+        activity: AppCompatActivity? = null,
+        callback: OpenAppCallback? = null,
+        showNow: Boolean = false
+    ) {
+        Log.d(TAG, "loadAppOpenAds: $adsId")
+        appOpenManager?.fetchAd(adsId, activity = activity, callback = callback, showNow = showNow)
+    }
+
     fun showAppOpenAds(adsId: String, activity: AppCompatActivity, callback: OpenAppCallback) {
         Log.d(TAG, "showAppOpenAds: ")
         appOpenManager?.showAdIfAvailable(activity, adsId, callback)

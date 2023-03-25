@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     var nativeAdMediumModel: NativeAdModel? = null
     var nativeAdBannerModel: NativeAdModel? = null
     var interstitialAdModel: InterstitialAdModel? = null
-
+    var isRestart = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -53,7 +53,46 @@ class MainActivity : AppCompatActivity() {
 //                "    }\n" +
 //                "}"
 //        AdUnitConfigMap.fromJson(x)
+        loadOpenAppAds()
+    }
 
+    private fun loadOpenAppAds() {
+        AdsManager.getInstance(application).loadOpenApAds("open_app", this);
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        isRestart = true
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "onResume: ${lifecycle.currentState}")
+        if (isRestart) {
+            isRestart = false
+            AdsManager.getInstance(application)
+                .showOpenApp("open_app", this, object : OpenAppCallback {
+                    override fun onAdDismissed() {
+                        Log.d(TAG, "onAdDismissed: ")
+                    }
+
+                    override fun onAdDisplayed() {
+                        Log.d(TAG, "onAdDisplayed: ")
+                    }
+
+                    override fun onAdDisplayFailed() {
+                        Log.d(TAG, "onAdDisplayFailed: ")
+                    }
+
+                    override fun onAdLoadFailed(msg: String?) {
+                        Log.d(TAG, "onAdLoadFailed: $msg")
+                    }
+
+                    override fun onAdDisabled() {
+                        Log.d(TAG, "onAdDisabled: ")
+                    }
+                })
+        }
     }
 
 

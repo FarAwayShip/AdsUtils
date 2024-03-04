@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 34
     buildToolsVersion "31.0.0"
 
     defaultConfig {
         applicationId "pl.itto.adsutilexample"
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 34
         versionCode getDates()
         versionName "1.1.0-beta3"
 
@@ -54,5 +54,5 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    implementation 'com.google.android.gms:play-services-ads:21.4.0'
+    implementation 'com.google.android.gms:play-services-ads:22.6.0'
 }

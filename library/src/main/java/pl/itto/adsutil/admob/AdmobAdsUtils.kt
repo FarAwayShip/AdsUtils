@@ -359,6 +359,7 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
         adsContainer.visibility = View.VISIBLE
         adsContainer.removeAllViews()
         adsContainer.addView(adView)
+        callback?.onAdPopulated()
     }
 
     fun loadNativeSmallAds(
@@ -443,5 +444,6 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
         adsContainer.visibility = View.VISIBLE
         adsContainer.removeAllViews()
         adsContainer.addView(adView)
+        callback?.onAdPopulated()
     }
 }

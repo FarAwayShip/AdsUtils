@@ -9,4 +9,8 @@ interface NativeAdCallback {
     fun onAdImpression()
     fun onAdClosed()
     fun onAdDisabled()
+
+    fun onAdPopulated() {
+
+    }
 }

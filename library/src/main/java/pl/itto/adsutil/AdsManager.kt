@@ -15,7 +15,6 @@ import androidx.annotation.RawRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
-import com.google.android.gms.ads.appopen.AppOpenAd.AppOpenAdLoadCallback
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdView
 import pl.itto.adsutil.Constants.PREF_NAME
@@ -34,6 +33,10 @@ class AdsManager private constructor(val application: Application) {
 
     companion object {
         const val TAG = "AdsManager"
+        private var _adsSdkInitialized = false
+        val isAdsSdkInitialized: Boolean
+            get() = _adsSdkInitialized
+
         private var _instance: AdsManager? = null
         fun getInstance(application: Application): AdsManager {
             if (_instance == null) {
@@ -54,6 +57,7 @@ class AdsManager private constructor(val application: Application) {
             if (initAppOpen) {
                 AdmobAdsUtils.getInstance(application).initAppOpen(application)
             }
+            _adsSdkInitialized = true
         } catch (e: Exception) {
             Log.e(TAG, "initAdsSdk Failed", e)
         }
@@ -100,6 +104,11 @@ class AdsManager private constructor(val application: Application) {
         callback: OpenAppCallback? = null
     ) {
         Log.d(TAG, "loadInterstitialAds: $adUnitName --showNow: $showNow")
+        if (!isAdsSdkInitialized) {
+            Log.e(TAG, "Ads Sdk not initialized, ignore load ads")
+            callback?.onAdLoadFailed("Not init sdk")
+            return
+        }
         if (adUnitConfigMap == null) {
             val msg = "Ads Config map not initialized, call failed"
             Log.e(TAG, msg)
@@ -123,6 +132,7 @@ class AdsManager private constructor(val application: Application) {
                 AdmobAdsUtils.getInstance(application)
                     .loadAppOpenAds(adsId, activity, callback, showNow)
             }
+
             else -> {
                 Log.e(TAG, "Not found Network type for $networkType")
             }
@@ -137,6 +147,11 @@ class AdsManager private constructor(val application: Application) {
     fun showOpenApp(adUnitName: String, activity: AppCompatActivity, callback: OpenAppCallback) {
         Log.d(TAG, "showOpenApp: $adUnitConfigMap")
         Log.d(TAG, "ad unit name: $adUnitName")
+        if (!isAdsSdkInitialized) {
+            Log.e(TAG, "Ads Sdk not initialized, ignore load ads")
+            callback?.onAdLoadFailed("Not init sdk")
+            return
+        }
         if (adUnitConfigMap == null) {
             val msg = "Ads Config map not initialized, call failed"
             Log.e(TAG, msg)
@@ -161,6 +176,7 @@ class AdsManager private constructor(val application: Application) {
                     AdmobAdsUtils.getInstance(application)
                         .showAppOpenAds(adsId, activity, callback)
                 }
+
                 else -> {
                     Log.e(TAG, "Not found Network type for $networkType")
                 }
@@ -182,6 +198,11 @@ class AdsManager private constructor(val application: Application) {
          * Load interstitial ad
          */
         Log.d(TAG, "loadInterstitialAds: $adUnitName --showNow: $showNow")
+        if (!isAdsSdkInitialized) {
+            Log.e(TAG, "Ads Sdk not initialized, ignore load ads")
+            callback?.onAdLoadFailed("Not init sdk")
+            return
+        }
         if (adUnitConfigMap == null) {
             val msg = "Ads Config map not initialized, call failed"
             Log.e(TAG, msg)
@@ -204,6 +225,7 @@ class AdsManager private constructor(val application: Application) {
                 AdmobAdsUtils.getInstance(application)
                     .loadInterstitialAds(adsId, activity, showNow, callback)
             }
+
             else -> {
                 Log.e(TAG, "Not found Network type for $networkType")
             }
@@ -222,6 +244,11 @@ class AdsManager private constructor(val application: Application) {
         callback: NativeAdCallback? = null,
         adUnitAltName: String? = null
     ) {
+        if (!isAdsSdkInitialized) {
+            Log.e(TAG, "Ads Sdk not initialized, ignore load ads")
+            callback?.onAdLoadFailed("Not init sdk")
+            return
+        }
         if (adUnitConfigMap == null) {
             val msg = "Ads Config map not initialized, call failed"
             Log.e(TAG, msg)
@@ -245,6 +272,7 @@ class AdsManager private constructor(val application: Application) {
                 AdmobAdsUtils.getInstance(application)
                     .loadNativeAds(adsId, adsContainer, activity, existAdModel, callback, adsIdAlt)
             }
+
             else -> {
                 Log.e(TAG, "Not found Network type for $networkType")
             }
@@ -264,6 +292,11 @@ class AdsManager private constructor(val application: Application) {
         callback: NativeAdCallback? = null,
         adUnitAltName: String? = null
     ) {
+        if (!isAdsSdkInitialized) {
+            Log.e(TAG, "Ads Sdk not initialized, ignore load ads")
+            callback?.onAdLoadFailed("Not init sdk")
+            return
+        }
         if (adUnitConfigMap == null) {
             val msg = "Ads Config map not initialized, call failed"
             Log.e(TAG, msg)
@@ -294,6 +327,7 @@ class AdsManager private constructor(val application: Application) {
                         adsIdAlt
                     )
             }
+
             else -> {
                 Log.e(TAG, "Not found Network type for $networkType")
             }
@@ -308,6 +342,11 @@ class AdsManager private constructor(val application: Application) {
         interstitialAdModel: InterstitialAdModel,
         callback: InterstitialAdCallback? = null
     ) {
+        if (!isAdsSdkInitialized) {
+            Log.e(TAG, "Ads Sdk not initialized, ignore load ads")
+            callback?.onAdLoadFailed("Not init sdk")
+            return
+        }
         if (!isAdEnabled) {
             Log.i(TAG, "Ads disabled, ignore loading ads")
             callback?.onAdDisabled()
@@ -342,6 +381,7 @@ class AdsManager private constructor(val application: Application) {
                 return adView
 
             }
+
             else -> {
                 Log.e(TAG, "Not found Network type for $networkType")
                 return null
@@ -373,6 +413,7 @@ class AdsManager private constructor(val application: Application) {
                 return adView
 
             }
+
             else -> {
                 Log.e(TAG, "Not found Network type for $networkType")
                 return null
@@ -397,6 +438,7 @@ class AdsManager private constructor(val application: Application) {
                             (adObject as NativeAd).destroy()
                         }
                     }
+
                     else -> {
                         Log.e(TAG, "destroyNativeAd Failed by no valid NetworkType: ")
                     }
@@ -407,6 +449,4 @@ class AdsManager private constructor(val application: Application) {
         }
 
     }
-
-
 }

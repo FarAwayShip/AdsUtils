@@ -57,9 +57,7 @@ dependencies {
     implementation(libs.facebook.shimmer)
 
     // Lifecycle
-    implementation(libs.androidx.lifecycle.extensions)
     implementation(libs.androidx.lifecycle.runtime)
-    annotationProcessor(libs.androidx.lifecycle.compiler)
 }
 
 val androidSourcesJar by tasks.registering(Jar::class) {

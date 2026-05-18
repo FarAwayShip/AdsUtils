@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "pl.itto.adsutilexample"
-        minSdk = 21
+        minSdk = 24
         targetSdk = 34
         versionCode = getDates()
         versionName = "1.1.0-beta3"
@@ -56,5 +56,5 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation(libs.play.services.ads)
+    implementation(libs.google.ads.mobile.sdk)
 }

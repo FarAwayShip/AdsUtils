@@ -3,17 +3,26 @@ package pl.itto.adsutil.admob
 import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
-import com.google.android.gms.ads.*
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.google.android.gms.ads.nativead.NativeAd
-import com.google.android.gms.ads.nativead.NativeAdOptions
-import com.google.android.gms.ads.nativead.NativeAdView
+import com.google.android.libraries.ads.mobile.sdk.MobileAds
+import com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback
+import com.google.android.libraries.ads.mobile.sdk.common.AdRequest
+import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError
+import com.google.android.libraries.ads.mobile.sdk.common.FullScreenContentError
+import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAd
+import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAdEventCallback
+import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAd
+import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdLoader
+import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdLoaderCallback
+import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdEventCallback
+import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdRequest
+import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdView
 import pl.itto.adsutil.BaseAdsUtils
 import pl.itto.adsutil.R
 import pl.itto.adsutil.callback.InterstitialAdCallback
@@ -22,7 +31,6 @@ import pl.itto.adsutil.callback.OpenAppCallback
 import pl.itto.adsutil.model.InterstitialAdModel
 import pl.itto.adsutil.model.NativeAdModel
 import pl.itto.adsutil.model.NetworkType
-
 
 class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils {
     companion object {
@@ -37,155 +45,126 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
         }
 
         fun populateNativeAdView(nativeAd: NativeAd, adView: NativeAdView) {
-            // Set the media view.
-            adView.mediaView = adView.findViewById(R.id.ad_media)
+            val headline = adView.findViewById<TextView>(R.id.ad_headline)
+            adView.headlineView = headline
+            headline.text = nativeAd.headline
 
-            // Set other ad assets.
-            adView.headlineView = adView.findViewById(R.id.ad_headline)
-            adView.bodyView = adView.findViewById(R.id.ad_body)
-            adView.bodyView?.isClickable = false
-            adView.callToActionView = adView.findViewById(R.id.ad_call_to_action)
-            adView.iconView = adView.findViewById(R.id.ad_app_icon)
-            adView.priceView = adView.findViewById(R.id.ad_price)
-            adView.priceView?.isClickable = false
-            adView.starRatingView = adView.findViewById(R.id.ad_stars)
-            adView.starRatingView?.isClickable = false
-            adView.storeView = adView.findViewById(R.id.ad_store)
-            adView.storeView?.isClickable = false
-            adView.advertiserView = adView.findViewById(R.id.ad_advertiser)
-            adView.advertiserView?.isClickable = false
-            // The headline and media content are guaranteed to be in every UnifiedNativeAd.
-            (adView.headlineView as TextView).text = nativeAd.headline
-            adView.mediaView?.mediaContent = nativeAd.mediaContent
-
-            // These assets aren't guaranteed to be in every UnifiedNativeAd, so it's important to
-            // check before trying to display them.
+            val body = adView.findViewById<TextView>(R.id.ad_body)
+            adView.bodyView = body
             if (nativeAd.body == null) {
-                adView.bodyView?.visibility = View.INVISIBLE
+                body?.visibility = View.INVISIBLE
             } else {
-                adView.bodyView?.visibility = View.VISIBLE
-                (adView.bodyView as TextView).text = nativeAd.body
+                body?.visibility = View.VISIBLE
+                body?.text = nativeAd.body
+                body?.isClickable = false
             }
 
+            val callToAction = adView.findViewById<Button>(R.id.ad_call_to_action)
+            adView.callToActionView = callToAction
             if (nativeAd.callToAction == null) {
-                adView.callToActionView?.visibility = View.INVISIBLE
+                callToAction?.visibility = View.INVISIBLE
             } else {
-                adView.callToActionView?.visibility = View.VISIBLE
-                (adView.callToActionView as Button).text = nativeAd.callToAction
+                callToAction?.visibility = View.VISIBLE
+                callToAction?.text = nativeAd.callToAction
             }
 
+            val icon = adView.findViewById<ImageView>(R.id.ad_app_icon)
+            adView.iconView = icon
             if (nativeAd.icon == null) {
-                adView.iconView?.visibility = View.GONE
+                icon?.visibility = View.GONE
             } else {
-                (adView.iconView as ImageView).setImageDrawable(
-                    nativeAd.icon?.drawable
-                )
-                adView.iconView?.visibility = View.VISIBLE
+                icon?.setImageDrawable(nativeAd.icon?.drawable)
+                icon?.visibility = View.VISIBLE
             }
 
+            val price = adView.findViewById<TextView>(R.id.ad_price)
+            adView.priceView = price
             if (nativeAd.price == null) {
-                adView.priceView?.visibility = View.INVISIBLE
+                price?.visibility = View.INVISIBLE
             } else {
-                adView.priceView?.visibility = View.VISIBLE
-                (adView.priceView as TextView).text = nativeAd.price
+                price?.visibility = View.VISIBLE
+                price?.text = nativeAd.price
+                price?.isClickable = false
             }
 
+            val store = adView.findViewById<TextView>(R.id.ad_store)
+            adView.storeView = store
             if (nativeAd.store == null) {
-                adView.storeView?.visibility = View.INVISIBLE
+                store?.visibility = View.INVISIBLE
             } else {
-                adView.storeView?.visibility = View.VISIBLE
-                (adView.storeView as TextView).text = nativeAd.store
+                store?.visibility = View.VISIBLE
+                store?.text = nativeAd.store
+                store?.isClickable = false
             }
 
+            val starRating = adView.findViewById<RatingBar>(R.id.ad_stars)
+            adView.starRatingView = starRating
             if (nativeAd.starRating == null) {
-                adView.starRatingView?.visibility = View.INVISIBLE
+                starRating?.visibility = View.INVISIBLE
             } else {
-                (adView.starRatingView as RatingBar).rating = nativeAd.starRating!!.toFloat()
-                adView.starRatingView?.visibility = View.VISIBLE
+                starRating?.rating = nativeAd.starRating!!.toFloat()
+                starRating?.visibility = View.VISIBLE
+                starRating?.isClickable = false
             }
 
+            val advertiser = adView.findViewById<TextView>(R.id.ad_advertiser)
+            adView.advertiserView = advertiser
             if (nativeAd.advertiser == null) {
-                adView.advertiserView?.visibility = View.INVISIBLE
+                advertiser?.visibility = View.INVISIBLE
             } else {
-                (adView.advertiserView as TextView).text = nativeAd.advertiser
-                adView.advertiserView?.visibility = View.VISIBLE
+                advertiser?.text = nativeAd.advertiser
+                advertiser?.visibility = View.VISIBLE
+                advertiser?.isClickable = false
             }
 
-            // This method tells the Google Mobile Ads SDK that you have finished populating your
-            // native ad view with this native ad.
-            adView.setNativeAd(nativeAd)
+            val mediaView = adView.findViewById<com.google.android.libraries.ads.mobile.sdk.nativead.MediaView>(R.id.ad_media)
 
-            // Get the video controller for the ad. One will always be provided, even if the ad doesn't
-            // have a video asset.
-            val vc = nativeAd.mediaContent?.videoController
-
-            // Updates the UI to say whether or not this ad has a video asset.
-            if (vc?.hasVideoContent() == true) {
-
-                // Create a new VideoLifecycleCallbacks object and pass it to the VideoController. The
-                // VideoController will call methods on this object when events occur in the video
-                // lifecycle.
-                vc.videoLifecycleCallbacks = object : VideoController.VideoLifecycleCallbacks() {
-                    override fun onVideoEnd() {
-                        // Publishers should allow native ads to complete video playback before
-                        // refreshing or replacing them with another ad in the same UI location.
-                        super.onVideoEnd()
-                    }
-                }
-            } else {
-            }
+            adView.registerNativeAd(nativeAd, mediaView)
         }
 
         fun populateNativeSmallAdView(nativeAd: NativeAd, adView: NativeAdView) {
-            // Set the media view.
-            adView.mediaView = adView.findViewById(R.id.ad_media)
+            val headline = adView.findViewById<TextView>(R.id.ad_headline)
+            adView.headlineView = headline
+            headline.text = nativeAd.headline
 
-            // Set other ad assets.
-            adView.headlineView = adView.findViewById(R.id.ad_headline)
-            adView.bodyView = adView.findViewById(R.id.ad_body)
-            adView.callToActionView = adView.findViewById(R.id.ad_call_to_action)
-            adView.iconView = adView.findViewById(R.id.ad_app_icon)
-            adView.starRatingView = adView.findViewById(R.id.ad_stars)
-            // The headline and media content are guaranteed to be in every UnifiedNativeAd.
-            (adView.headlineView as TextView).text = nativeAd.headline
-
-            // These assets aren't guaranteed to be in every UnifiedNativeAd, so it's important to
-            // check before trying to display them.
+            val body = adView.findViewById<TextView>(R.id.ad_body)
+            adView.bodyView = body
             if (nativeAd.body == null) {
-                adView.bodyView?.visibility = View.INVISIBLE
+                body?.visibility = View.INVISIBLE
             } else {
-                adView.bodyView?.visibility = View.VISIBLE
-                (adView.bodyView as TextView).text = nativeAd.body
+                body?.visibility = View.VISIBLE
+                body?.text = nativeAd.body
             }
 
+            val callToAction = adView.findViewById<Button>(R.id.ad_call_to_action)
+            adView.callToActionView = callToAction
             if (nativeAd.callToAction == null) {
-                adView.callToActionView?.visibility = View.INVISIBLE
+                callToAction?.visibility = View.INVISIBLE
             } else {
-                adView.callToActionView?.visibility = View.VISIBLE
-                (adView.callToActionView as Button).text = nativeAd.callToAction
+                callToAction?.visibility = View.VISIBLE
+                callToAction?.text = nativeAd.callToAction
             }
 
+            val icon = adView.findViewById<ImageView>(R.id.ad_app_icon)
+            adView.iconView = icon
             if (nativeAd.icon == null) {
-                adView.iconView?.visibility = View.GONE
+                icon?.visibility = View.GONE
             } else {
-                (adView.iconView as ImageView).setImageDrawable(
-                    nativeAd.icon?.drawable
-                )
-                adView.iconView?.visibility = View.VISIBLE
+                icon?.setImageDrawable(nativeAd.icon?.drawable)
+                icon?.visibility = View.VISIBLE
             }
 
+            val starRating = adView.findViewById<RatingBar>(R.id.ad_stars)
+            adView.starRatingView = starRating
             if (nativeAd.starRating == null) {
-                adView.starRatingView?.visibility = View.INVISIBLE
+                starRating?.visibility = View.INVISIBLE
             } else {
-                (adView.starRatingView as RatingBar).rating = nativeAd.starRating!!.toFloat()
-                adView.starRatingView?.visibility = View.VISIBLE
+                starRating?.rating = nativeAd.starRating!!.toFloat()
+                starRating?.visibility = View.VISIBLE
             }
 
-            // This method tells the Google Mobile Ads SDK that you have finished populating your
-            // native ad view with this native ad.
-            adView.setNativeAd(nativeAd)
+            adView.registerNativeAd(nativeAd, null)
         }
-
 
         const val TEST_INTER_AD_ID = "ca-app-pub-3940256099942544/1033173712"
         const val TEST_NATIVE_AD_ID = "ca-app-pub-3940256099942544/2247696110"
@@ -194,10 +173,17 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
 
     override fun initSdk(context: Context) {
         Log.d(TAG, "initSdk: ")
-        MobileAds.initialize(
-            context
-        ) {
-        }
+        Thread {
+            try {
+                val appId = context.getString(R.string.ads_test_app_id)
+                val config = com.google.android.libraries.ads.mobile.sdk.initialization.InitializationConfig.Builder(appId).build()
+                MobileAds.initialize(context, config) { status ->
+                    Log.d(TAG, "GMA Next-Gen SDK Initialized successfully: $status")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "GMA Next-Gen SDK Initialization failed", e)
+            }
+        }.start()
     }
 
     fun initAppOpen(application: Application) {
@@ -220,7 +206,6 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
         appOpenManager?.showAdIfAvailable(activity, adsId, callback)
     }
 
-
     /***
      * Load Interstitial Ad
      */
@@ -232,47 +217,32 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
     ) {
         Log.d(TAG, "loadInterstitial: $adsId")
 
-        val adRequest = AdRequest.Builder().build()
-        InterstitialAd.load(activity, adsId, adRequest, object : InterstitialAdLoadCallback() {
-            override fun onAdLoaded(p0: InterstitialAd) {
-                Log.d(TAG, "on Inter AdLoaded: ")
-                val adModel = InterstitialAdModel(NetworkType.ADMOB)
-                adModel.adObject = p0
-                callback?.onAdLoaded(adModel)
-                if (showNow) {
-//                    val content_callback = object : FullScreenContentCallback() {
-//                        override fun onAdDismissedFullScreenContent() {
-//                            Log.d(TAG, "Ad was dismissed.")
-//                            // Don't forget to set the ad reference to null so you
-//                            // don't show the ad a second time.
-//                            callback?.onAdDismissed()
-//                        }
-//
-//                        override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
-//                            Log.d(TAG, "Ad failed to show.")
-//                            // Don't forget to set the ad reference to null so you
-//                            // don't show the ad a second time.
-//                            callback?.onAdDisplayFailed()
-//                        }
-//
-//                        override fun onAdShowedFullScreenContent() {
-//                            Log.d(TAG, "Ad showed fullscreen content.")
-//                            callback?.onAdDisplayed()
-//                            // Actually we don't need to deal with this method, no need to process
-//                        }
-//
-//                        override fun onAdImpression() {
-//                            callback?.onAdImpression()
-//                        }
-//                    }
-                    adModel.show(activity, callback)
+        val adRequest = AdRequest.Builder(adsId).build()
+        val handler = Handler(Looper.getMainLooper())
+        
+        InterstitialAd.load(
+            adRequest,
+            object : AdLoadCallback<InterstitialAd> {
+                override fun onAdLoaded(p0: InterstitialAd) {
+                    Log.d(TAG, "on Inter AdLoaded: ")
+                    val adModel = InterstitialAdModel(NetworkType.ADMOB).apply {
+                        adObject = p0
+                    }
+                    handler.post {
+                        callback?.onAdLoaded(adModel)
+                    }
+                    if (showNow) {
+                        adModel.show(activity, callback)
+                    }
                 }
-            }
 
-            override fun onAdFailedToLoad(p0: LoadAdError) {
-                Log.e(TAG, "on Inter AdFailedToLoad: ${p0.message} - ${p0.code}")
-            }
-        })
+                override fun onAdFailedToLoad(p0: LoadAdError) {
+                    Log.e(TAG, "on Inter AdFailedToLoad: ${p0.message} - ${p0.code}")
+                    handler.post {
+                        callback?.onAdLoadFailed(p0.message)
+                    }
+                }
+            })
     }
 
     fun loadNativeAds(
@@ -282,50 +252,33 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
         altAdId: String? = null
     ) {
         Log.d(TAG, "loadNativeAds: ")
-        var builder = AdLoader.Builder(activity, adId)
-            .forNativeAd { nativeAd ->
-                onNativeAdLoaded(callback, activity, nativeAd, adsContainer)
-            }
-        val nativeOption =
-            NativeAdOptions.Builder().setAdChoicesPlacement(NativeAdOptions.ADCHOICES_TOP_RIGHT)
-                .build()
-        builder.withNativeAdOptions(
-            nativeOption
-        )
+        val handler = Handler(Looper.getMainLooper())
+        val adRequest = NativeAdRequest.Builder(
+            adId,
+            listOf(NativeAd.NativeAdType.NATIVE)
+        ).build()
 
-        val adLoader = builder.withAdListener(object : AdListener() {
-            override fun onAdClosed() {
-                Log.d(TAG, "onAdClosed: ")
-                super.onAdClosed()
-            }
-
-            override fun onAdClicked() {
-                super.onAdClicked()
-                callback?.onAdClicked()
-            }
-
-            override fun onAdImpression() {
-                Log.d(TAG, "onAdImpression: ")
-                callback?.onAdImpression()
-            }
-
-            override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                val error =
-                    """
-           domain: ${loadAdError.domain}, code: ${loadAdError.code}, message: ${loadAdError.message}
-          """"
-                Log.e(TAG, "on Native Ad failed to load: $error")
-                if (!altAdId.isNullOrEmpty()) {
-                    Log.d(TAG, "Alt ad id defined, so reload with alt ad id")
-                    loadNativeAds(altAdId, adsContainer, activity, existAdModel, callback)
-                    return
+        NativeAdLoader.load(
+            adRequest,
+            object : NativeAdLoaderCallback {
+                override fun onNativeAdLoaded(nativeAd: NativeAd) {
+                    onNativeAdLoaded(callback, activity, nativeAd, adsContainer)
                 }
-                callback?.onAdLoadFailed(error)
+
+                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                    val error = "code: ${loadAdError.code}, message: ${loadAdError.message}"
+                    Log.e(TAG, "on Native Ad failed to load: $error")
+                    if (!altAdId.isNullOrEmpty()) {
+                        Log.d(TAG, "Alt ad id defined, so reload with alt ad id")
+                        loadNativeAds(altAdId, adsContainer, activity, existAdModel, callback, null)
+                        return
+                    }
+                    handler.post {
+                        callback?.onAdLoadFailed(error)
+                    }
+                }
             }
-        }).build()
-
-        adLoader.loadAd(AdRequest.Builder().build())
-
+        )
     }
 
     /**
@@ -338,28 +291,50 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
         adsContainer: FrameLayout
     ) {
         Log.d(TAG, "Native ad loaded")
-        val nativeAdModel = NativeAdModel(NetworkType.ADMOB)
-        nativeAdModel.adObject
-        callback?.onAdLoaded(nativeAdModel)
-
-        if (activity.isDestroyed) {
-            nativeAd.destroy()
-            return
+        val handler = Handler(Looper.getMainLooper())
+        val nativeAdModel = NativeAdModel(NetworkType.ADMOB).apply {
+            adObject = nativeAd
         }
-        // Assumes that your ad layout is in a file call native_ad_layout.xml
-        // in the res/layout folder
-        val layoutInflater = activity.layoutInflater
-        val adView = layoutInflater
-            .inflate(R.layout.ads_native_home, null) as NativeAdView
-        // This method sets the text, images and the native ad, etc into the ad
-        // view.
-        populateNativeAdView(nativeAd, adView)
-        // Assumes you have a placeholder FrameLayout in your View layout
-        // (with id ad_frame) where the ad is to be placed.
-        adsContainer.visibility = View.VISIBLE
-        adsContainer.removeAllViews()
-        adsContainer.addView(adView)
-        callback?.onAdPopulated()
+
+        nativeAd.adEventCallback = object : NativeAdEventCallback {
+            override fun onAdClicked() {
+                handler.post {
+                    callback?.onAdClicked()
+                }
+            }
+
+            override fun onAdImpression() {
+                handler.post {
+                    callback?.onAdImpression()
+                }
+            }
+
+            override fun onAdDismissedFullScreenContent() {
+                handler.post {
+                    callback?.onAdClosed()
+                }
+            }
+        }
+
+        handler.post {
+            callback?.onAdLoaded(nativeAdModel)
+
+            if (activity.isDestroyed) {
+                nativeAd.destroy()
+                return@post
+            }
+
+            val layoutInflater = activity.layoutInflater
+            val adView = layoutInflater
+                .inflate(R.layout.ads_native_home, null) as NativeAdView
+
+            populateNativeAdView(nativeAd, adView)
+
+            adsContainer.visibility = View.VISIBLE
+            adsContainer.removeAllViews()
+            adsContainer.addView(adView)
+            callback?.onAdPopulated()
+        }
     }
 
     fun loadNativeSmallAds(
@@ -368,52 +343,34 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
         callback: NativeAdCallback? = null,
         altAdId: String? = null
     ) {
-        Log.d(TAG, "loadNativeAds: ")
-        val builder = AdLoader.Builder(activity, adId)
-            .forNativeAd { nativeAd ->
-                onNativeSmallAdLoaded(callback, activity, nativeAd, adsContainer)
-            }
-        val nativeOption =
-            NativeAdOptions.Builder().setAdChoicesPlacement(NativeAdOptions.ADCHOICES_TOP_RIGHT)
-                .build()
-        builder.withNativeAdOptions(
-            nativeOption
-        )
+        Log.d(TAG, "loadNativeSmallAds: ")
+        val handler = Handler(Looper.getMainLooper())
+        val adRequest = NativeAdRequest.Builder(
+            adId,
+            listOf(NativeAd.NativeAdType.NATIVE)
+        ).build()
 
-
-        val adLoader = builder.withAdListener(object : AdListener() {
-            override fun onAdClosed() {
-                Log.d(TAG, "onAdClosed: ")
-                super.onAdClosed()
-            }
-
-            override fun onAdClicked() {
-                super.onAdClicked()
-                callback?.onAdClicked()
-            }
-
-            override fun onAdImpression() {
-                Log.d(TAG, "onAdImpression: ")
-                callback?.onAdImpression()
-            }
-
-            override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                val error =
-                    """
-           domain: ${loadAdError.domain}, code: ${loadAdError.code}, message: ${loadAdError.message}
-          """"
-                Log.e(TAG, "onAdFailedToLoad: $error")
-                if (!altAdId.isNullOrEmpty()) {
-                    Log.d(TAG, "Alt adId defined, so reload with alt adId")
-                    loadNativeSmallAds(altAdId, adsContainer, activity, existAdModel, callback)
-                    return
+        NativeAdLoader.load(
+            adRequest,
+            object : NativeAdLoaderCallback {
+                override fun onNativeAdLoaded(nativeAd: NativeAd) {
+                    onNativeSmallAdLoaded(callback, activity, nativeAd, adsContainer)
                 }
-                callback?.onAdLoadFailed(error)
+
+                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                    val error = "code: ${loadAdError.code}, message: ${loadAdError.message}"
+                    Log.e(TAG, "onAdFailedToLoad (Small): $error")
+                    if (!altAdId.isNullOrEmpty()) {
+                        Log.d(TAG, "Alt adId defined, so reload with alt adId")
+                        loadNativeSmallAds(altAdId, adsContainer, activity, existAdModel, callback, null)
+                        return
+                    }
+                    handler.post {
+                        callback?.onAdLoadFailed(error)
+                    }
+                }
             }
-        }).build()
-
-        adLoader.loadAd(AdRequest.Builder().build())
-
+        )
     }
 
     private fun onNativeSmallAdLoaded(
@@ -423,27 +380,49 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
         adsContainer: FrameLayout
     ) {
         Log.d(TAG, "Native small ad loaded")
-        val nativeAdModel = NativeAdModel(NetworkType.ADMOB)
-        nativeAdModel.adObject
-        callback?.onAdLoaded(nativeAdModel)
-
-        if (activity.isDestroyed) {
-            nativeAd.destroy()
-            return
+        val handler = Handler(Looper.getMainLooper())
+        val nativeAdModel = NativeAdModel(NetworkType.ADMOB).apply {
+            adObject = nativeAd
         }
-        // Assumes that your ad layout is in a file call native_ad_layout.xml
-        // in the res/layout folder
-        val layoutInflater = activity.layoutInflater
-        val adView = layoutInflater
-            .inflate(R.layout.ads_native_banner, null) as NativeAdView
-        // This method sets the text, images and the native ad, etc into the ad
-        // view.
-        populateNativeSmallAdView(nativeAd, adView)
-        // Assumes you have a placeholder FrameLayout in your View layout
-        // (with id ad_frame) where the ad is to be placed.
-        adsContainer.visibility = View.VISIBLE
-        adsContainer.removeAllViews()
-        adsContainer.addView(adView)
-        callback?.onAdPopulated()
+
+        nativeAd.adEventCallback = object : NativeAdEventCallback {
+            override fun onAdClicked() {
+                handler.post {
+                    callback?.onAdClicked()
+                }
+            }
+
+            override fun onAdImpression() {
+                handler.post {
+                    callback?.onAdImpression()
+                }
+            }
+
+            override fun onAdDismissedFullScreenContent() {
+                handler.post {
+                    callback?.onAdClosed()
+                }
+            }
+        }
+
+        handler.post {
+            callback?.onAdLoaded(nativeAdModel)
+
+            if (activity.isDestroyed) {
+                nativeAd.destroy()
+                return@post
+            }
+
+            val layoutInflater = activity.layoutInflater
+            val adView = layoutInflater
+                .inflate(R.layout.ads_native_banner, null) as NativeAdView
+
+            populateNativeSmallAdView(nativeAd, adView)
+
+            adsContainer.visibility = View.VISIBLE
+            adsContainer.removeAllViews()
+            adsContainer.addView(adView)
+            callback?.onAdPopulated()
+        }
     }
 }

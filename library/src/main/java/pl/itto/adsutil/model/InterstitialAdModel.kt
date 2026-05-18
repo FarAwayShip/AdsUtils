@@ -1,11 +1,13 @@
 package pl.itto.adsutil.model
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
-import com.google.android.gms.ads.AdError
-import com.google.android.gms.ads.FullScreenContentCallback
-import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.libraries.ads.mobile.sdk.common.FullScreenContentError
+import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAd
+import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAdEventCallback
 import pl.itto.adsutil.callback.InterstitialAdCallback
 
 class InterstitialAdModel(adNetworkType: NetworkType = NetworkType.UN_DEFINED) : BaseAdModel() {
@@ -19,38 +21,46 @@ class InterstitialAdModel(adNetworkType: NetworkType = NetworkType.UN_DEFINED) :
             Log.d(TAG, "InterstitialAd not showed due to activity null: ")
             return
         }
+        val handler = Handler(Looper.getMainLooper())
+        
         if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
             when (adNetworkType) {
-//                NetworkType.APPLOVIN -> {
-//                    adObject?.let {
-//                        val ad = (it as MaxInterstitialAd)
-//                        if (ad.isReady) {
-//                            Log.i(TAG, "Showing Ad")
-//                            ad.showAd()
-//                        } else {
-//                            Log.e(TAG, "App lovin interstitial ad not showed due to not ready")
-//                        }
-//                    }
-//                }
-
                 NetworkType.ADMOB -> {
                     adObject?.let {
-                        val fullScreenContentCallback = object : FullScreenContentCallback() {
+                        val ad = it as InterstitialAd
+                        ad.adEventCallback = object : InterstitialAdEventCallback {
                             override fun onAdShowedFullScreenContent() {
-                                callback?.onAdDisplayed()
+                                handler.post {
+                                    callback?.onAdDisplayed()
+                                }
                             }
 
                             override fun onAdDismissedFullScreenContent() {
-                                callback?.onAdDismissed()
+                                handler.post {
+                                    callback?.onAdDismissed()
+                                }
                             }
 
-                            override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-                                callback?.onAdDisplayFailed()
+                            override fun onAdFailedToShowFullScreenContent(error: FullScreenContentError) {
+                                handler.post {
+                                    callback?.onAdDisplayFailed()
+                                }
+                            }
+
+                            override fun onAdClicked() {
+                                handler.post {
+                                    callback?.onAdClicked()
+                                }
+                            }
+
+                            override fun onAdImpression() {
+                                handler.post {
+                                    callback?.onAdImpression()
+                                }
                             }
                         }
-                        (it as InterstitialAd).fullScreenContentCallback = fullScreenContentCallback
                         Log.i(TAG, "showing ad")
-                        (it as InterstitialAd).show(activity)
+                        ad.show(activity)
                     }
                 }
                 else -> {

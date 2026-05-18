@@ -3,8 +3,12 @@
     "admob": "ca-app-pub-3940256099942544/1033173712",
     "applovin": "df09f73ee22ed34e"
   },
+  "banner": {
+    "admob": "ca-app-pub-3940256099942544/9214589741",
+    "applovin": "df09f73ee22ed34e"
+  },
   "native_home": {
-    "admob": "ca-app-pub-3940256099942544/2247696110",
+    "admob": "ca-app-pub-3940256099942544/1044960115",
     "applovin": "73e9eceef33e5627"
   },
   "native_home_alt": {
@@ -16,7 +20,7 @@
     "applovin": "a4d1b1f4f307a998"
   },
   "open_app": {
-    "admob": "ca-app-pub-3940256099942544/3419835294",
+    "admob": "ca-app-pub-3940256099942544/9257395921",
     "applovin": "a4d1b1f4f307a998"
   }
 }

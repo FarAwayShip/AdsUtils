@@ -11,7 +11,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 24
         targetSdk = 34
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -53,7 +53,7 @@ dependencies {
     implementation(libs.google.gson)
 
     // Admob
-    implementation(libs.play.services.ads)
+    implementation(libs.google.ads.mobile.sdk)
     implementation(libs.facebook.shimmer)
 
     // Lifecycle

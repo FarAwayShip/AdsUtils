@@ -5,9 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.gms.ads.AdError
-import com.google.android.gms.ads.FullScreenContentCallback
-import com.google.android.gms.ads.interstitial.InterstitialAd
+
 import pl.itto.adsutil.AdsManager
 import pl.itto.adsutil.callback.InterstitialAdCallback
 import pl.itto.adsutil.callback.NativeAdCallback
@@ -25,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var mBinding: ActivityMainBinding
-    var mInterstitialAd: InterstitialAd? = null
+
 
     var nativeAdMediumModel: NativeAdModel? = null
     var nativeAdBannerModel: NativeAdModel? = null
@@ -252,32 +250,7 @@ class MainActivity : AppCompatActivity() {
             .loadInterstitialAds("inter_splash", this, false)
     }
 
-    val mFullScreenAdsCallback = object : FullScreenContentCallback() {
-        override fun onAdDismissedFullScreenContent() {
-            Log.d(TAG, "Ad was dismissed.")
-            Toast.makeText(this@MainActivity, "Ad was dismissed.", Toast.LENGTH_SHORT).show()
-            // Don't forget to set the ad reference to null so you
-            // don't show the ad a second time.
-            mInterstitialAd = null
-        }
 
-        override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-            Log.d(TAG, "Ad failed to show.")
-            Toast.makeText(this@MainActivity, "Ad failed to show", Toast.LENGTH_SHORT).show()
-            // Don't forget to set the ad reference to null so you
-            // don't show the ad a second time.
-            mInterstitialAd = null
-        }
-
-        override fun onAdShowedFullScreenContent() {
-            Log.d(TAG, "Ad showed fullscreen content.")
-            Toast.makeText(this@MainActivity, "Ad showed fullscreen content.", Toast.LENGTH_SHORT)
-                .show()
-            // Called when ad is dismissed.
-//            goToMainScreen()
-//            mViewModel.onAdsShow()
-        }
-    }
 
     override fun onDestroy() {
         super.onDestroy()

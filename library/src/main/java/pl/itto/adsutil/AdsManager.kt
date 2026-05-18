@@ -15,8 +15,8 @@ import androidx.annotation.RawRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
-import com.google.android.gms.ads.nativead.NativeAd
-import com.google.android.gms.ads.nativead.NativeAdView
+import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAd
+import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdView
 import pl.itto.adsutil.Constants.PREF_NAME
 import pl.itto.adsutil.Constants.SHOW_ADS
 import pl.itto.adsutil.admob.AdmobAdsUtils

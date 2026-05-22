@@ -1,4 +1,4 @@
-version = "1.7.0"
+version = "1.7.1"
 
 plugins {
     alias(libs.plugins.android.library)
@@ -37,6 +37,12 @@ android {
     lint {
         abortOnError = false
     }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
@@ -60,17 +66,11 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime)
 }
 
-val androidSourcesJar by tasks.registering(Jar::class) {
-    archiveClassifier.set("sources")
-    from("src/main/java")
-}
-
 afterEvaluate {
     publishing {
         publications {
             create<MavenPublication>("release") {
                 from(components["release"])
-                artifact(androidSourcesJar)
             }
         }
     }

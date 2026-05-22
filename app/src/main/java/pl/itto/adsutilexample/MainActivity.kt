@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity() {
 //        })
         AdsManager.getInstance(application)
             .loadNativeSmallAds(
-                "native_home",
+                "native_home_alt",
                 mBinding.adsNativeBannerContainer,
                 this,
                 nativeAdBannerModel,
@@ -147,7 +147,7 @@ class MainActivity : AppCompatActivity() {
 //        })
         AdsManager.getInstance(application)
             .loadNativeAds(
-                "native_setting",
+                "native_home",
                 mBinding.adsContainer,
                 this,
                 nativeAdMediumModel,

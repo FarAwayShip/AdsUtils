@@ -163,7 +163,8 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
                 starRating?.visibility = View.VISIBLE
             }
 
-            adView.registerNativeAd(nativeAd, null)
+            val mediaView = adView.findViewById<com.google.android.libraries.ads.mobile.sdk.nativead.MediaView>(R.id.ad_media)
+            adView.registerNativeAd(nativeAd, mediaView)
         }
 
         const val TEST_INTER_AD_ID = "ca-app-pub-3940256099942544/1033173712"

@@ -170,10 +170,9 @@ class NativeAdsLayout : CardView {
             starRating?.visibility = View.INVISIBLE
         }
 
-        var mediaView: com.google.android.libraries.ads.mobile.sdk.nativead.MediaView? = null
-        if (isNA) {
-            mediaView = adView.findViewById(R.id.ad_media)
+        val mediaView = adView.findViewById<com.google.android.libraries.ads.mobile.sdk.nativead.MediaView>(R.id.ad_media)
 
+        if (isNA) {
             val price = adView.findViewById<TextView>(R.id.ad_price)
             adView.priceView = price
             if (nativeAd.price == null) {

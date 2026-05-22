@@ -12,7 +12,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:onClick="loadNativeBanner"
-        android:text="Banner"
+        android:text="Native Banner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,7 +22,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:onClick="openNative"
-        android:text="Native"
+        android:text="Native (Media)"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_banner" />
@@ -68,7 +68,7 @@
             <FrameLayout
                 android:id="@+id/ads_native_banner_container"
                 android:layout_width="match_parent"
-                android:layout_height="150dp" />
+                android:layout_height="wrap_content" />
             <!--        <pl.itto.adsutil.NativeAdsLayout-->
             <!--            android:id="@+id/native_ads"-->
             <!--            android:layout_width="match_parent"-->

@@ -224,23 +224,23 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
         InterstitialAd.load(
             adRequest,
             object : AdLoadCallback<InterstitialAd> {
-                override fun onAdLoaded(p0: InterstitialAd) {
+                override fun onAdLoaded(ad: InterstitialAd) {
                     Log.d(TAG, "on Inter AdLoaded: ")
                     val adModel = InterstitialAdModel(NetworkType.ADMOB).apply {
-                        adObject = p0
+                        adObject = ad
                     }
                     handler.post {
                         callback?.onAdLoaded(adModel)
-                    }
-                    if (showNow) {
-                        adModel.show(activity, callback)
+                        if (showNow) {
+                            adModel.show(activity, callback)
+                        }
                     }
                 }
 
-                override fun onAdFailedToLoad(p0: LoadAdError) {
-                    Log.e(TAG, "on Inter AdFailedToLoad: ${p0.message} - ${p0.code}")
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.e(TAG, "on Inter AdFailedToLoad: ${adError.message} - ${adError.code}")
                     handler.post {
-                        callback?.onAdLoadFailed(p0.message)
+                        callback?.onAdLoadFailed(adError.message)
                     }
                 }
             })
@@ -266,8 +266,8 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
                     onNativeAdLoaded(callback, activity, nativeAd, adsContainer)
                 }
 
-                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                    val error = "code: ${loadAdError.code}, message: ${loadAdError.message}"
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    val error = "code: ${adError.code}, message: ${adError.message}"
                     Log.e(TAG, "on Native Ad failed to load: $error")
                     if (!altAdId.isNullOrEmpty()) {
                         Log.d(TAG, "Alt ad id defined, so reload with alt ad id")
@@ -358,8 +358,8 @@ class AdmobAdsUtils private constructor(application: Application) : BaseAdsUtils
                     onNativeSmallAdLoaded(callback, activity, nativeAd, adsContainer)
                 }
 
-                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                    val error = "code: ${loadAdError.code}, message: ${loadAdError.message}"
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    val error = "code: ${adError.code}, message: ${adError.message}"
                     Log.e(TAG, "onAdFailedToLoad (Small): $error")
                     if (!altAdId.isNullOrEmpty()) {
                         Log.d(TAG, "Alt adId defined, so reload with alt adId")

@@ -22,49 +22,50 @@ class InterstitialAdModel(adNetworkType: NetworkType = NetworkType.UN_DEFINED) :
             return
         }
         val handler = Handler(Looper.getMainLooper())
-        
-        if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-            when (adNetworkType) {
-                NetworkType.ADMOB -> {
-                    adObject?.let {
-                        val ad = it as InterstitialAd
-                        ad.adEventCallback = object : InterstitialAdEventCallback {
-                            override fun onAdShowedFullScreenContent() {
-                                handler.post {
-                                    callback?.onAdDisplayed()
+        handler.post {
+            if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                when (adNetworkType) {
+                    NetworkType.ADMOB -> {
+                        adObject?.let {
+                            val ad = it as InterstitialAd
+                            ad.adEventCallback = object : InterstitialAdEventCallback {
+                                override fun onAdShowedFullScreenContent() {
+                                    handler.post {
+                                        callback?.onAdDisplayed()
+                                    }
                                 }
-                            }
 
-                            override fun onAdDismissedFullScreenContent() {
-                                handler.post {
-                                    callback?.onAdDismissed()
+                                override fun onAdDismissedFullScreenContent() {
+                                    handler.post {
+                                        callback?.onAdDismissed()
+                                    }
                                 }
-                            }
 
-                            override fun onAdFailedToShowFullScreenContent(error: FullScreenContentError) {
-                                handler.post {
-                                    callback?.onAdDisplayFailed()
+                                override fun onAdFailedToShowFullScreenContent(fullScreenContentError: FullScreenContentError) {
+                                    handler.post {
+                                        callback?.onAdDisplayFailed()
+                                    }
                                 }
-                            }
 
-                            override fun onAdClicked() {
-                                handler.post {
-                                    callback?.onAdClicked()
+                                override fun onAdClicked() {
+                                    handler.post {
+                                        callback?.onAdClicked()
+                                    }
                                 }
-                            }
 
-                            override fun onAdImpression() {
-                                handler.post {
-                                    callback?.onAdImpression()
+                                override fun onAdImpression() {
+                                    handler.post {
+                                        callback?.onAdImpression()
+                                    }
                                 }
                             }
+                            Log.i(TAG, "showing ad")
+                            ad.show(activity)
                         }
-                        Log.i(TAG, "showing ad")
-                        ad.show(activity)
                     }
-                }
-                else -> {
-                    Log.e(TAG, "Interstitial ad not showed due to wrong network: $adNetworkType")
+                    else -> {
+                        Log.e(TAG, "Interstitial ad not showed due to wrong network: $adNetworkType")
+                    }
                 }
             }
         }

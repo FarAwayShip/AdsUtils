@@ -57,19 +57,21 @@ class AppOpenManager(private val application: Application) :
             request,
             object : AdLoadCallback<AppOpenAd> {
                 override fun onAdLoaded(ad: AppOpenAd) {
-                    this@AppOpenManager.appOpenAd = ad
-                    this@AppOpenManager.loadTime = Date().time
+                    handler.post {
+                        this@AppOpenManager.appOpenAd = ad
+                        this@AppOpenManager.loadTime = Date().time
 
-                    // Only show immediately if callback is not null
-                    if (activity != null && callback != null && showNow) {
-                        showAdIfAvailable(activity, adUnitId, callback)
+                        // Only show immediately if callback is not null
+                        if (activity != null && callback != null && showNow) {
+                            showAdIfAvailable(activity, adUnitId, callback)
+                        }
                     }
                 }
 
-                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                    this@AppOpenManager.appOpenAd = null
+                override fun onAdFailedToLoad(adError: LoadAdError) {
                     handler.post {
-                        callback?.onAdLoadFailed(loadAdError.message)
+                        this@AppOpenManager.appOpenAd = null
+                        callback?.onAdLoadFailed(adError.message)
                     }
                 }
             }
@@ -127,52 +129,54 @@ class AppOpenManager(private val application: Application) :
         Log.d(TAG, "showAdIfAvailable: ")
         val handler = Handler(Looper.getMainLooper())
         
-        // Only show ad if there is not already an app open ad currently showing
-        // and an ad is available.
-        if (!isShowingAd && isAdAvailable()) {
-            Log.d(TAG, "Activity state: ${activity.lifecycle.currentState}")
-            if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-                Log.d(TAG, "Will show ad.")
-                
-                appOpenAd!!.adEventCallback = object : AppOpenAdEventCallback {
-                    override fun onAdDismissedFullScreenContent() {
-                        handler.post {
-                            callback?.onAdDismissed()
+        handler.post {
+            // Only show ad if there is not already an app open ad currently showing
+            // and an ad is available.
+            if (!isShowingAd && isAdAvailable()) {
+                Log.d(TAG, "Activity state: ${activity.lifecycle.currentState}")
+                if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+                    Log.d(TAG, "Will show ad.")
+                    
+                    appOpenAd!!.adEventCallback = object : AppOpenAdEventCallback {
+                        override fun onAdDismissedFullScreenContent() {
+                            handler.post {
+                                callback?.onAdDismissed()
+                                appOpenAd = null
+                                isShowingAd = false
+                                fetchAd(adUnitId)
+                            }
                         }
-                        appOpenAd = null
-                        isShowingAd = false
-                        fetchAd(adUnitId)
-                    }
 
-                    override fun onAdFailedToShowFullScreenContent(error: FullScreenContentError) {
-                        appOpenAd = null
-                        isShowingAd = false
-                        handler.post {
-                            callback?.onAdDisplayFailed()
+                        override fun onAdFailedToShowFullScreenContent(fullScreenContentError: FullScreenContentError) {
+                            handler.post {
+                                appOpenAd = null
+                                isShowingAd = false
+                                callback?.onAdDisplayFailed()
+                            }
+                        }
+
+                        override fun onAdShowedFullScreenContent() {
+                            handler.post {
+                                callback?.onAdDisplayed()
+                                appOpenAd = null
+                                isShowingAd = true
+                            }
+                        }
+
+                        override fun onAdClicked() {
+                            // Optional callback
+                        }
+
+                        override fun onAdImpression() {
+                            // Optional callback
                         }
                     }
-
-                    override fun onAdShowedFullScreenContent() {
-                        handler.post {
-                            callback?.onAdDisplayed()
-                        }
-                        appOpenAd = null
-                        isShowingAd = true
-                    }
-
-                    override fun onAdClicked() {
-                        // Optional callback
-                    }
-
-                    override fun onAdImpression() {
-                        // Optional callback
-                    }
+                    appOpenAd!!.show(activity)
                 }
-                appOpenAd!!.show(activity)
+            } else {
+                Log.d(TAG, "Can not show ad.")
+                fetchAd(adUnitId, activity, callback)
             }
-        } else {
-            Log.d(TAG, "Can not show ad.")
-            fetchAd(adUnitId, activity, callback)
         }
     }
 }
